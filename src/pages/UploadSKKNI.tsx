@@ -7,6 +7,11 @@ import { Upload, FileText, MessageSquare, Plus, Send, Loader2 } from 'lucide-rea
 import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
 import * as mammoth from 'mammoth';
+// @ts-ignore
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Set up PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -25,7 +30,7 @@ const UploadSKKNI = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useState(25); // Changed from 50 to 25
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<Array<{role: string, content: string}>>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -128,104 +133,22 @@ const UploadSKKNI = () => {
       const reader = new FileReader();
       
       if (file.name.toLowerCase().endsWith('.pdf')) {
-        // For PDF files, use a more sophisticated text extraction
         reader.onload = async (e) => {
           try {
-            const arrayBuffer = e.target?.result as ArrayBuffer;
-            
-            // Convert ArrayBuffer to Uint8Array for better processing
-            const uint8Array = new Uint8Array(arrayBuffer);
-            
-            // Simple PDF text extraction approach
-            let text = '';
-            let isTextMode = false;
-            let currentWord = '';
-            
-            for (let i = 0; i < uint8Array.length - 1; i++) {
-              const byte = uint8Array[i];
-              const nextByte = uint8Array[i + 1];
-              const char = String.fromCharCode(byte);
-              
-              // Look for text objects in PDF
-              if (char === 'B' && String.fromCharCode(nextByte) === 'T') {
-                isTextMode = true;
-                i++; // skip next byte
-                continue;
-              }
-              
-              if (char === 'E' && String.fromCharCode(nextByte) === 'T') {
-                isTextMode = false;
-                if (currentWord.trim()) {
-                  text += currentWord + ' ';
-                  currentWord = '';
-                }
-                i++; // skip next byte
-                continue;
-              }
-              
-              if (isTextMode) {
-                // Extract readable characters
-                if (byte >= 32 && byte <= 126) {
-                  currentWord += char;
-                } else if (byte === 10 || byte === 13) {
-                  if (currentWord.trim()) {
-                    text += currentWord + '\n';
-                    currentWord = '';
-                  }
-                }
-              }
-              
-              // Also look for readable text outside text objects
-              if (!isTextMode && byte >= 32 && byte <= 126 && char.match(/[a-zA-Z0-9\s\.\,\!\?\:\;\-\(\)]/)) {
-                // Look for sequences of readable characters
-                let sequence = '';
-                let j = i;
-                while (j < uint8Array.length && uint8Array[j] >= 32 && uint8Array[j] <= 126) {
-                  sequence += String.fromCharCode(uint8Array[j]);
-                  j++;
-                }
-                
-                if (sequence.length > 3 && sequence.match(/[a-zA-Z]/)) {
-                  text += sequence + ' ';
-                  i = j - 1; // move index forward
-                }
-              }
+            const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
+            const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+            let fullText = '';
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const content = await page.getTextContent();
+              const pageText = content.items.map((item: any) => item.str).join(' ');
+              fullText += `\n\n--- Halaman ${i} ---\n\n${pageText}`;
             }
-            
-            // Clean up the extracted text
-            text = text
-              .replace(/\s+/g, ' ') // Multiple spaces to single space
-              .replace(/\n\s*\n/g, '\n') // Multiple newlines to single newline
-              .trim();
-            
-            // If we got very little text, try a different approach
-            if (text.length < 100) {
-              // Try to extract any readable ASCII sequences
-              text = '';
-              let tempText = '';
-              
-              for (let i = 0; i < uint8Array.length; i++) {
-                const byte = uint8Array[i];
-                if (byte >= 32 && byte <= 126) {
-                  tempText += String.fromCharCode(byte);
-                } else {
-                  if (tempText.length > 5 && tempText.match(/[a-zA-Z]/)) {
-                    text += tempText + ' ';
-                  }
-                  tempText = '';
-                }
-              }
-              
-              text = text.replace(/\s+/g, ' ').trim();
-            }
-            
-            if (text.length < 50) {
-              text = `PDF file ${file.name} appears to be image-based or encrypted. Size: ${file.size} bytes. Please ensure the PDF contains selectable text.`;
-            }
-            
-            resolve(text);
+
+            resolve(fullText || `Tidak dapat membaca teks dari file PDF ${file.name}`);
           } catch (error) {
-            resolve(`Error extracting PDF content from ${file.name}: ${error}`);
+            resolve(`Error membaca PDF ${file.name}: ${error}`);
           }
         };
         reader.readAsArrayBuffer(file);
@@ -270,9 +193,9 @@ const UploadSKKNI = () => {
     setIsLoading(true);
     
     try {
-      // Prepare context from CSV data
+      // Prepare context from CSV data - REMOVED LIMITATION
       const csvContext = csvData.length > 0 
-        ? `Data SKKNI yang tersedia (${csvData.length} baris):\n${JSON.stringify(csvData.slice(0, 10), null, 2)}...` 
+        ? `Data SKKNI yang tersedia (${csvData.length} baris):\n${JSON.stringify(csvData, null, 2)}` 
         : '';
       
       // Prepare context from syllabus files
@@ -346,7 +269,7 @@ const UploadSKKNI = () => {
     <DashboardLayout>
       <div className="space-y-8 animate-fade-in">
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white">
-          <h2 className="text-3xl font-bold mb-2">Unggah SKKNI</h2>
+          <h2 className="text-3xl font-bold mb-2">Analisa SKKNI</h2>
           <p className="text-purple-100 text-lg">Upload dan analisis file SKKNI dengan AI</p>
         </div>
 

@@ -15,10 +15,10 @@ const UserProfile: React.FC = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Get user data from localStorage or use defaults
+  // Get user data from localStorage or use defaults - sync with auth context
   const [userAvatar, setUserAvatar] = useState(localStorage.getItem('userAvatar') || '');
   const [userName, setUserName] = useState(localStorage.getItem('userName') || user?.email?.split('@')[0] || '');
-  const [userEmail, setUserEmail] = useState(user?.email || '');
+  const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail') || user?.email || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
