@@ -10,8 +10,8 @@ import * as mammoth from 'mammoth';
 // @ts-ignore
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Configure PDF.js to work without external worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -30,7 +30,7 @@ const UploadSKKNI = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(25); // Changed from 50 to 25
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<Array<{role: string, content: string}>>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -136,18 +136,28 @@ const UploadSKKNI = () => {
         reader.onload = async (e) => {
           try {
             const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
-            const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+            
+            // Use PDF.js with improved configuration
+            const loadingTask = pdfjsLib.getDocument({
+              data: typedArray,
+              useWorkerFetch: false,
+              isEvalSupported: false,
+              useSystemFonts: true
+            });
+            
+            const pdf = await loadingTask.promise;
             let fullText = '';
 
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const content = await page.getTextContent();
-              const pageText = content.items.map((item: any) => item.str).join(' ');
-              fullText += `\n\n--- Halaman ${i} ---\n\n${pageText}`;
+              const strings = content.items.map((item: any) => item.str);
+              fullText += strings.join(' ') + '\n\n';
             }
 
-            resolve(fullText || `Tidak dapat membaca teks dari file PDF ${file.name}`);
+            resolve(fullText.trim() || `Tidak dapat membaca teks dari file PDF ${file.name}`);
           } catch (error) {
+            console.error('PDF reading error:', error);
             resolve(`Error membaca PDF ${file.name}: ${error}`);
           }
         };
@@ -193,7 +203,7 @@ const UploadSKKNI = () => {
     setIsLoading(true);
     
     try {
-      // Prepare context from CSV data - REMOVED LIMITATION
+      // Prepare context from CSV data
       const csvContext = csvData.length > 0 
         ? `Data SKKNI yang tersedia (${csvData.length} baris):\n${JSON.stringify(csvData, null, 2)}` 
         : '';
