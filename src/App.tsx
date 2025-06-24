@@ -12,6 +12,7 @@ import UploadSKKNI from "./pages/UploadSKKNI";
 import PetaMitra from "./pages/PetaMitra";
 import Rekomendasi from "./pages/Rekomendasi";
 import AdminPanel from "./pages/AdminPanel";
+import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/peta-mitra" element={<PetaMitra />} />
             <Route path="/rekomendasi" element={<Rekomendasi />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/profile" element={<UserProfile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
