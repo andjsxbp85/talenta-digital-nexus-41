@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,28 +8,43 @@ const PetaMitra = () => {
     {
       id: 1,
       nama: "PT Digital Training Center",
-      lokasi: "Jakarta Selatan",
-      okupasi: ["Software QA Engineer", "Web Developer"],
-      status: "Aktif",
+      learningPath: "Software Development",
+      daftarUK: ["UK001 - Menganalisis Kebutuhan Sistem", "UK002 - Merancang Arsitektur Aplikasi", "UK003 - Implementasi Database"],
+      status: "Tersedia di LMS",
       jumlahPeserta: 150
     },
     {
       id: 2,
       nama: "CV Tech Academy",
-      lokasi: "Bandung",
-      okupasi: ["Data Analyst", "UI/UX Designer"],
-      status: "Aktif",
+      learningPath: "Data Analytics",
+      daftarUK: ["UK004 - Analisis Data Statistik", "UK005 - Visualisasi Data", "UK006 - Machine Learning Dasar"],
+      status: "Sedang Dikembangkan",
       jumlahPeserta: 89
     },
     {
       id: 3,
       nama: "Bootcamp Indonesia",
-      lokasi: "Surabaya",
-      okupasi: ["Full Stack Developer", "DevOps Engineer"],
-      status: "Pending",
+      learningPath: "Full Stack Development",
+      daftarUK: ["UK007 - Frontend Development", "UK008 - Backend Development", "UK009 - DevOps Implementation"],
+      status: "Akan Dikembangkan",
       jumlahPeserta: 67
     }
   ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Tersedia di LMS':
+        return 'bg-green-100 text-green-800';
+      case 'Sedang Dikembangkan':
+        return 'bg-blue-100 text-blue-800';
+      case 'Akan Dikembangkan':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Selesai - Ditutup':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -108,8 +122,8 @@ const PetaMitra = () => {
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="border border-gray-300 px-4 py-2 text-left">Nama Mitra</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Lokasi</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Okupasi</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Learning Path</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Daftar UK</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Peserta</th>
                   </tr>
@@ -123,28 +137,24 @@ const PetaMitra = () => {
                       <td className="border border-gray-300 px-4 py-2">
                         <div className="flex items-center gap-1">
                           <MapPin className="w-4 h-4 text-gray-500" />
-                          {mitra.lokasi}
+                          {mitra.learningPath}
                         </div>
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        <div className="flex flex-wrap gap-1">
-                          {mitra.okupasi.map((occ, index) => (
-                            <span
+                        <div className="space-y-1">
+                          {mitra.daftarUK.map((uk, index) => (
+                            <div
                               key={index}
-                              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                              className="bg-blue-50 text-blue-800 text-xs px-2 py-1 rounded border"
                             >
-                              {occ}
-                            </span>
+                              {uk}
+                            </div>
                           ))}
                         </div>
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            mitra.status === 'Aktif'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
+                          className={`px-2 py-1 rounded text-xs ${getStatusColor(mitra.status)}`}
                         >
                           {mitra.status}
                         </span>
