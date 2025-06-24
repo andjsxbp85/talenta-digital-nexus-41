@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -46,40 +45,34 @@ const Dashboard = () => {
           <p className="text-blue-100 text-lg">Kelola dan analisis data SKKNI dengan mudah menggunakan AI</p>
         </div>
 
-        {/* Gemini Connection Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold text-gray-800">Koneksi Gemini AI</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GeminiConnection />
+        {/* Gemini Connection Section - Full Width */}
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-800">Koneksi Gemini AI</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <GeminiConnection />
+          </CardContent>
+        </Card>
+
+        {/* Stats Overview - Full Width Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((stat, index) => (
+            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                    <p className={`text-sm font-medium ${stat.color}`}>{stat.change} dari bulan lalu</p>
+                  </div>
+                  <div className={`p-3 rounded-xl bg-gray-50`}>
+                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Stats Overview */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                        <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                        <p className={`text-sm font-medium ${stat.color}`}>{stat.change} dari bulan lalu</p>
-                      </div>
-                      <div className={`p-3 rounded-xl bg-gray-50`}>
-                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Looker Studio Section */}
