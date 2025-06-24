@@ -8,6 +8,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import UploadSKKNI from "./pages/UploadSKKNI";
+import PetaMitra from "./pages/PetaMitra";
+import Rekomendasi from "./pages/Rekomendasi";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,7 +26,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/upload-skkni" element={<UploadSKKNI />} />
+            <Route path="/peta-mitra" element={<PetaMitra />} />
+            <Route path="/rekomendasi" element={<Rekomendasi />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
