@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 
 const GeminiConnection = () => {
   const [apiKey, setApiKey] = useState('');
@@ -42,8 +41,8 @@ const GeminiConnection = () => {
         localStorage.setItem('geminiApiKey', apiKey);
         setIsConnected(true);
         toast({
-          title: "Koneksi Berhasil!",
-          description: "API Key Gemini telah tersimpan dan terhubung",
+          title: "Koneksi Berhasil! 🎉",
+          description: "API Key Gemini telah tersimpan dan siap digunakan",
         });
       } else {
         throw new Error('Invalid API Key');
@@ -70,55 +69,69 @@ const GeminiConnection = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          {isConnected ? (
-            <CheckCircle className="w-5 h-5 text-green-600" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-orange-600" />
-          )}
-          <span>Gemini AI Connection</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {!isConnected ? (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="gemini-key">Gemini API Key</Label>
-              <Input
-                id="gemini-key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Masukkan API Key Gemini"
-              />
-            </div>
-            <Button 
-              onClick={handleConnect} 
-              className="w-full"
-              disabled={isChecking}
-            >
-              {isChecking ? 'Memeriksa...' : 'Connect'}
-            </Button>
-          </>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 text-green-600">
-              <CheckCircle className="w-4 h-4" />
-              <span className="text-sm">Terhubung ke Gemini AI</span>
-            </div>
-            <Button 
-              onClick={handleDisconnect} 
-              variant="outline"
-              className="w-full"
-            >
-              Disconnect
-            </Button>
+    <div className="space-y-6">
+      {!isConnected ? (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 mb-4">
+            <Sparkles className="w-5 h-5 text-purple-600" />
+            <span className="font-semibold text-gray-800">Setup Gemini AI</span>
           </div>
-        )}
-      </CardContent>
-    </Card>
+          
+          <div className="space-y-3">
+            <Label htmlFor="gemini-key" className="text-sm font-medium text-gray-700">
+              Gemini API Key
+            </Label>
+            <Input
+              id="gemini-key"
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Masukkan API Key Gemini"
+              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+            />
+            <p className="text-xs text-gray-500">
+              Dapatkan API Key dari Google AI Studio
+            </p>
+          </div>
+          
+          <Button 
+            onClick={handleConnect} 
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium"
+            disabled={isChecking}
+          >
+            {isChecking ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Memeriksa koneksi...</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Hubungkan ke Gemini</span>
+              </div>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+            <div>
+              <p className="font-semibold text-green-800">Terhubung ke Gemini AI</p>
+              <p className="text-sm text-green-600">Siap untuk analisis dan rekomendasi</p>
+            </div>
+          </div>
+          
+          <Button 
+            onClick={handleDisconnect} 
+            variant="outline"
+            className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+          >
+            Putuskan Koneksi
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 

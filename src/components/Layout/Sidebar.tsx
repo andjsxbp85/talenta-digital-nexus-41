@@ -8,11 +8,17 @@ import {
   Map,
   Lightbulb,
   Settings,
-  User
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const Sidebar = () => {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const { user } = useAuth();
   const location = useLocation();
 
@@ -52,20 +58,30 @@ const Sidebar = () => {
   const visibleMenuItems = menuItems.filter(item => item.show);
 
   return (
-    <div className="w-64 bg-gray-900 text-white min-h-screen flex flex-col">
-      <div className="p-6 border-b border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-            <User className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold">PPTD</h2>
-            <p className="text-sm text-gray-300">Kemenkominfo</p>
-          </div>
+    <div className={cn(
+      "fixed left-0 top-0 h-full bg-white shadow-xl border-r border-gray-200 sidebar-transition z-50",
+      collapsed ? "w-16" : "w-64"
+    )}>
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <div className="text-white">
+              <h2 className="text-xl font-bold">PPTD</h2>
+              <p className="text-sm text-blue-100">Kemenkominfo</p>
+            </div>
+          )}
+          <button
+            onClick={onToggle}
+            className="p-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-white transition-colors"
+          >
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
-      <nav className="flex-1 p-4">
+      {/* Navigation */}
+      <nav className="p-4">
         <ul className="space-y-2">
           {visibleMenuItems.map((item) => {
             const Icon = item.icon;
@@ -76,14 +92,16 @@ const Sidebar = () => {
                 <Link
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
+                    "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                     isActive 
-                      ? "bg-blue-600 text-white" 
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg" 
+                      : "text-gray-700 hover:bg-blue-50 hover:text-blue-600",
+                    collapsed && "justify-center"
                   )}
+                  title={collapsed ? item.title : undefined}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.title}</span>
+                  <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-gray-500 group-hover:text-blue-600")} />
+                  {!collapsed && <span className="font-medium">{item.title}</span>}
                 </Link>
               </li>
             );
@@ -91,12 +109,16 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-700">
-        <div className="text-sm text-gray-400">
-          <p>Masuk sebagai: {user?.email}</p>
-          <p className="text-xs mt-1">Role: {user?.role}</p>
+      {/* Footer */}
+      {!collapsed && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
+          <div className="text-sm text-gray-600">
+            <p className="font-medium">Masuk sebagai:</p>
+            <p className="text-xs truncate">{user?.email}</p>
+            <p className="text-xs mt-1 text-blue-600 font-medium">Role: {user?.role}</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

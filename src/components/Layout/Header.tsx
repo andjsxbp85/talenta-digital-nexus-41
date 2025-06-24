@@ -2,65 +2,52 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { User, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { LogOut, Menu } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const Header = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
+  const { logout, user } = useAuth();
   const { toast } = useToast();
 
   const handleLogout = () => {
     logout();
     toast({
-      title: "Logout Berhasil",
+      title: "Berhasil logout",
       description: "Anda telah keluar dari sistem",
     });
-    navigate('/');
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
+    <header className="bg-white shadow-sm border-b border-gray-200 p-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Sistem Administrasi PPTD
-          </h1>
-          <p className="text-sm text-gray-600">
-            Pusat Pengembangan Talenta Digital - Kemenkominfo
-          </p>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleSidebar}
+            className="lg:hidden"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">Dashboard Talenta Digital</h1>
+            <p className="text-sm text-gray-600">Selamat datang, {user?.email}</p>
+          </div>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <User className="w-4 h-4" />
-              <span>{user?.email}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div>
-                <p className="font-medium">{user?.email}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          onClick={handleLogout}
+          variant="outline"
+          size="sm"
+          className="flex items-center space-x-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Logout</span>
+        </Button>
       </div>
     </header>
   );
