@@ -1,9 +1,8 @@
 
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
-import PDFWorker from '../workers/pdf.worker.js?worker';
 
-// Configure PDF.js worker
-GlobalWorkerOptions.workerPort = new PDFWorker();
+// Configure PDF.js worker with CDN fallback
+GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${getDocument.version}/build/pdf.worker.min.js`;
 
 export const readPdfContent = async (file) => {
   return new Promise((resolve, reject) => {

@@ -3,7 +3,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import worker from "vite-plugin-worker";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -13,7 +12,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    worker(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
