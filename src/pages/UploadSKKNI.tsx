@@ -7,11 +7,7 @@ import { Upload, FileText, MessageSquare, Plus, Send, Loader2 } from 'lucide-rea
 import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
 import * as mammoth from 'mammoth';
-// @ts-ignore
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure PDF.js to work without external worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+import { readPdfContent } from '@/components/PdfReader';
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -133,35 +129,10 @@ const UploadSKKNI = () => {
       const reader = new FileReader();
       
       if (file.name.toLowerCase().endsWith('.pdf')) {
-        reader.onload = async (e) => {
-          try {
-            const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
-            
-            // Use PDF.js with improved configuration
-            const loadingTask = pdfjsLib.getDocument({
-              data: typedArray,
-              useWorkerFetch: false,
-              isEvalSupported: false,
-              useSystemFonts: true
-            });
-            
-            const pdf = await loadingTask.promise;
-            let fullText = '';
-
-            for (let i = 1; i <= pdf.numPages; i++) {
-              const page = await pdf.getPage(i);
-              const content = await page.getTextContent();
-              const strings = content.items.map((item: any) => item.str);
-              fullText += strings.join(' ') + '\n\n';
-            }
-
-            resolve(fullText.trim() || `Tidak dapat membaca teks dari file PDF ${file.name}`);
-          } catch (error) {
-            console.error('PDF reading error:', error);
-            resolve(`Error membaca PDF ${file.name}: ${error}`);
-          }
-        };
-        reader.readAsArrayBuffer(file);
+        // Use the new PDF reader component
+        readPdfContent(file)
+          .then(resolve)
+          .catch(error => resolve(`Error membaca PDF ${file.name}: ${error}`));
       } else if (file.name.toLowerCase().endsWith('.docx')) {
         reader.onload = async (e) => {
           try {
