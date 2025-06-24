@@ -125,15 +125,18 @@ const UploadSKKNI = () => {
   };
 
   const readFileContent = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
+    return new Promise(async (resolve, reject) => {
       if (file.name.toLowerCase().endsWith('.pdf')) {
-        // Use the new PDF reader component
-        readPdfContent(file)
-          .then(resolve)
-          .catch(error => resolve(`Error membaca PDF ${file.name}: ${error}`));
+        // Use the new Gemini-based PDF reader
+        try {
+          const content = await readPdfContent(file);
+          resolve(content);
+        } catch (error) {
+          console.error('PDF reading error:', error);
+          resolve(`Error membaca PDF ${file.name}: ${error}`);
+        }
       } else if (file.name.toLowerCase().endsWith('.docx')) {
+        const reader = new FileReader();
         reader.onload = async (e) => {
           try {
             const arrayBuffer = e.target?.result as ArrayBuffer;
@@ -144,17 +147,20 @@ const UploadSKKNI = () => {
           }
         };
         reader.readAsArrayBuffer(file);
+        reader.onerror = () => {
+          resolve(`Error reading file ${file.name}`);
+        };
       } else {
+        const reader = new FileReader();
         reader.onload = (e) => {
           const content = e.target?.result as string;
           resolve(content);
         };
         reader.readAsText(file);
+        reader.onerror = () => {
+          resolve(`Error reading file ${file.name}`);
+        };
       }
-      
-      reader.onerror = () => {
-        resolve(`Error reading file ${file.name}`);
-      };
     });
   };
 
