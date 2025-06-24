@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -30,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
       show: true
     },
     {
-      title: 'Unggah SKKNI',
+      title: 'Analisa AI',
       href: '/upload-skkni',
       icon: Upload,
       show: true
@@ -42,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
       show: true
     },
     {
-      title: 'Rekomendasi',
+      title: 'Daftar Okupasi',
       href: '/rekomendasi',
       icon: Lightbulb,
       show: true

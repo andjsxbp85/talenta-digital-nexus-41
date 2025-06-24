@@ -250,7 +250,7 @@ const UploadSKKNI = () => {
     <DashboardLayout>
       <div className="space-y-8 animate-fade-in">
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white">
-          <h2 className="text-3xl font-bold mb-2">Analisa SKKNI</h2>
+          <h2 className="text-3xl font-bold mb-2">Analisa AI</h2>
           <p className="text-purple-100 text-lg">Upload dan analisis file SKKNI dengan AI</p>
         </div>
 

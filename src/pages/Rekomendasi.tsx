@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,7 +96,7 @@ const Rekomendasi = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Rekomendasi Mitra</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Daftar Okupasi</h2>
           <p className="text-gray-600">Generate rekomendasi pengembangan materi pelatihan untuk mitra baru</p>
         </div>
 
