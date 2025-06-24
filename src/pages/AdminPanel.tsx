@@ -11,31 +11,9 @@ import { Settings, UserPlus, Users, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminPanel = () => {
-  const { user } = useAuth();
+  const { user, registeredUsers, addUser, deleteUser } = useAuth();
   const { toast } = useToast();
   const [newUser, setNewUser] = useState({ email: '', password: '', role: 'user' });
-  
-  // Mock data untuk demo
-  const [users, setUsers] = useState([
-    {
-      id: '1',
-      email: 'admin@kemenkominfo.go.id',
-      role: 'admin',
-      created_at: '2024-01-15T10:30:00Z'
-    },
-    {
-      id: '2',
-      email: 'user1@example.com',
-      role: 'user',
-      created_at: '2024-01-20T14:45:00Z'
-    },
-    {
-      id: '3',
-      email: 'user2@example.com',
-      role: 'user',
-      created_at: '2024-01-25T09:15:00Z'
-    }
-  ]);
 
   // Redirect jika bukan admin
   if (user?.role !== 'admin') {
@@ -54,15 +32,18 @@ const AdminPanel = () => {
       return;
     }
 
-    // Simulasi tambah user
-    const userData = {
-      id: Date.now().toString(),
-      email: newUser.email,
-      role: newUser.role,
-      created_at: new Date().toISOString()
-    };
-    
-    setUsers(prev => [...prev, userData]);
+    // Check if user already exists
+    const userExists = registeredUsers.find(u => u.email === newUser.email);
+    if (userExists) {
+      toast({
+        title: "Error",
+        description: "Email sudah terdaftar",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    addUser(newUser);
     setNewUser({ email: '', password: '', role: 'user' });
     
     toast({
@@ -73,7 +54,7 @@ const AdminPanel = () => {
 
   const handleDeleteUser = (userId: string, email: string) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus user ${email}?`)) {
-      setUsers(prev => prev.filter(u => u.id !== userId));
+      deleteUser(userId);
       toast({
         title: "Berhasil",
         description: `User ${email} berhasil dihapus`
@@ -168,20 +149,20 @@ const AdminPanel = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
                   <span className="font-medium">Total User</span>
-                  <span className="text-2xl font-bold text-blue-600">{users.length}</span>
+                  <span className="text-2xl font-bold text-blue-600">{registeredUsers.length}</span>
                 </div>
                 
                 <div className="flex justify-between items-center p-3 bg-green-50 rounded">
                   <span className="font-medium">Admin</span>
                   <span className="text-2xl font-bold text-green-600">
-                    {users.filter(u => u.role === 'admin').length}
+                    {registeredUsers.filter(u => u.role === 'admin').length}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center p-3 bg-orange-50 rounded">
                   <span className="font-medium">User Biasa</span>
                   <span className="text-2xl font-bold text-orange-600">
-                    {users.filter(u => u.role === 'user').length}
+                    {registeredUsers.filter(u => u.role === 'user').length}
                   </span>
                 </div>
               </div>
@@ -203,12 +184,11 @@ const AdminPanel = () => {
                   <tr className="bg-gray-50">
                     <th className="border border-gray-300 px-4 py-2 text-left">Email</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Role</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Dibuat</th>
                     <th className="border border-gray-300 px-4 py-2 text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((userData) => (
+                  {registeredUsers.map((userData) => (
                     <tr key={userData.id} className="hover:bg-gray-50">
                       <td className="border border-gray-300 px-4 py-2">{userData.email}</td>
                       <td className="border border-gray-300 px-4 py-2">
@@ -221,9 +201,6 @@ const AdminPanel = () => {
                         >
                           {userData.role}
                         </span>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 text-sm">
-                        {formatDate(userData.created_at)}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 text-center">
                         {userData.email !== user?.email && (
