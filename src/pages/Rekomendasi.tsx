@@ -43,7 +43,7 @@ const Rekomendasi = () => {
           judulUK: 'Melakukan Pengujian Automated Testing',
           status: 'Belum Dikembangkan',
           prioritas: 'Tinggi',
-          mitraExisting: '-',
+          mitraExisting: 'Binar Academy',
           rekomendasi: 'Disarankan menggunakan tools Selenium dan Cypress untuk automated testing'
         },
         {
@@ -51,7 +51,7 @@ const Rekomendasi = () => {
           judulUK: 'Menerapkan API Testing',
           status: 'Sudah Dikembangkan',
           prioritas: 'Sedang',
-          mitraExisting: 'PT Digital Training Center',
+          mitraExisting: 'Microsoft',
           rekomendasi: 'Mitra baru bisa fokus pada tools K6 atau REST Assured'
         },
         {
@@ -59,7 +59,7 @@ const Rekomendasi = () => {
           judulUK: 'Performance Testing',
           status: 'Belum Dikembangkan',
           prioritas: 'Tinggi',
-          mitraExisting: '-',
+          mitraExisting: 'DQLab',
           rekomendasi: 'Opportunity untuk mengembangkan materi JMeter dan LoadRunner'
         }
       ];

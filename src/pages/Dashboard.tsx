@@ -41,8 +41,8 @@ const Dashboard = () => {
       <div className="space-y-8 animate-fade-in">
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
-          <h2 className="text-3xl font-bold mb-2">Selamat Datang di Dashboard PPTD</h2>
-          <p className="text-blue-100 text-lg">Kelola dan analisis data SKKNI dengan mudah menggunakan AI</p>
+          <h2 className="text-3xl font-bold mb-2">Selamat Datang di Dashboard Pusbang Talenta Digital!</h2>
+          <p className="text-blue-100 text-xl">Kelola Data Pelatihan dengan mudah menggunakan AI</p>
         </div>
 
         {/* Gemini Connection Section - Full Width */}

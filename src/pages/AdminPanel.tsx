@@ -80,7 +80,7 @@ const AdminPanel = () => {
             <Settings className="w-8 h-8" />
             Admin Panel
           </h2>
-          <p className="text-gray-600">Manajemen pengguna sistem administrasi PPTD</p>
+          <p className="text-gray-600">Manajemen pengguna sistem administrasi Pusat Pengembangan Talenta Digital</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -41,11 +41,11 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-4">
           {/* Logo Website */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">TD</span>
+            <div className="w-48 rounded-lg flex items-center justify-center">
+              <img className="bg-opacity-0" src="public/assets/Bpsdm komdigi.png" alt="Description of image" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Dashboard Talenta Digital</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard Talenta Digital</h1>
             </div>
           </div>
         </div>

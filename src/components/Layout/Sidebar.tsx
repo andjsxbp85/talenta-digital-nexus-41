@@ -66,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="text-white">
-              <h2 className="text-xl font-bold">PPTD</h2>
+              <h2 className="text-xl font-bold">Pusbang Taldig</h2>
               <p className="text-sm text-blue-100">Kemenkominfo</p>
             </div>
           )}

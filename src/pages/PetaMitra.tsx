@@ -7,7 +7,7 @@ const PetaMitra = () => {
   const mitraData = [
     {
       id: 1,
-      nama: "PT Digital Training Center",
+      nama: "Microsoft",
       learningPath: "Software Development",
       daftarUK: ["UK001 - Menganalisis Kebutuhan Sistem", "UK002 - Merancang Arsitektur Aplikasi", "UK003 - Implementasi Database"],
       status: "Tersedia di LMS",
@@ -15,7 +15,7 @@ const PetaMitra = () => {
     },
     {
       id: 2,
-      nama: "CV Tech Academy",
+      nama: "DQLab",
       learningPath: "Data Analytics",
       daftarUK: ["UK004 - Analisis Data Statistik", "UK005 - Visualisasi Data", "UK006 - Machine Learning Dasar"],
       status: "Sedang Dikembangkan",
@@ -23,7 +23,7 @@ const PetaMitra = () => {
     },
     {
       id: 3,
-      nama: "Bootcamp Indonesia",
+      nama: "Binar Academy",
       learningPath: "Full Stack Development",
       daftarUK: ["UK007 - Frontend Development", "UK008 - Backend Development", "UK009 - DevOps Implementation"],
       status: "Akan Dikembangkan",
