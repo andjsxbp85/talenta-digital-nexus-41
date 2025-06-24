@@ -8,8 +8,8 @@ import {
   Map,
   Lightbulb,
   Settings,
-  ChevronLeft,
-  ChevronRight
+  Menu,
+  ChevronLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -62,8 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
       "fixed left-0 top-0 h-full bg-white shadow-xl border-r border-gray-200 sidebar-transition z-50",
       collapsed ? "w-16" : "w-64"
     )}>
-      {/* Header */}
-      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
+      {/* Header with Toggle */}
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="text-white">
@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
             onClick={onToggle}
             className="p-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-white transition-colors"
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {collapsed ? <Menu className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
       </div>

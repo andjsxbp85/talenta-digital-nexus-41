@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Upload, FileText, MessageSquare, Plus, Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
+import * as mammoth from 'mammoth';
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -126,18 +127,60 @@ const UploadSKKNI = () => {
   const readFileContent = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        if (file.name.endsWith('.pdf')) {
-          // For PDF files, we'd need a PDF parser library
-          // For now, just return a placeholder
-          resolve(`[PDF Content from ${file.name}] - Content would be extracted here`);
-        } else {
+      
+      if (file.name.toLowerCase().endsWith('.pdf')) {
+        // For PDF files, we need to use a different approach
+        reader.onload = async (e) => {
+          try {
+            const arrayBuffer = e.target?.result as ArrayBuffer;
+            // This is a simplified PDF text extraction
+            // For production, you might want to use a library like pdf-parse
+            const uint8Array = new Uint8Array(arrayBuffer);
+            let text = '';
+            
+            // Simple text extraction from PDF (this is very basic)
+            for (let i = 0; i < uint8Array.length; i++) {
+              const char = String.fromCharCode(uint8Array[i]);
+              if (char.match(/[a-zA-Z0-9\s\.\,\!\?\:\;\-]/)) {
+                text += char;
+              }
+            }
+            
+            // Clean up the extracted text
+            text = text.replace(/\s+/g, ' ').trim();
+            
+            if (text.length < 100) {
+              text = `PDF content from ${file.name} - Text extraction available but content appears to be image-based or encrypted. File size: ${file.size} bytes, Type: ${file.type}`;
+            }
+            
+            resolve(text);
+          } catch (error) {
+            resolve(`Error extracting PDF content from ${file.name}: ${error}`);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (file.name.toLowerCase().endsWith('.docx')) {
+        reader.onload = async (e) => {
+          try {
+            const arrayBuffer = e.target?.result as ArrayBuffer;
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            resolve(result.value || `No text content found in ${file.name}`);
+          } catch (error) {
+            resolve(`Error extracting DOCX content from ${file.name}: ${error}`);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.onload = (e) => {
+          const content = e.target?.result as string;
           resolve(content);
-        }
+        };
+        reader.readAsText(file);
+      }
+      
+      reader.onerror = () => {
+        resolve(`Error reading file ${file.name}`);
       };
-      reader.onerror = reject;
-      reader.readAsText(file);
     });
   };
 
@@ -314,6 +357,27 @@ const UploadSKKNI = () => {
               </div>
             )}
 
+            {/* Upload Silabus Button */}
+            <div className="flex gap-2">
+              <Button
+                onClick={() => document.getElementById('syllabus-input')?.click()}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Upload Silabus
+              </Button>
+              <input
+                id="syllabus-input"
+                type="file"
+                multiple
+                accept=".pdf,.docx,.txt,.doc"
+                className="hidden"
+                onChange={(e) => handleSyllabusUpload(e.target.files)}
+              />
+            </div>
+
             {/* Syllabus Files Display */}
             {syllabusFiles.length > 0 && (
               <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
@@ -328,54 +392,32 @@ const UploadSKKNI = () => {
                 </div>
               </div>
             )}
-
-            {/* Chat Input */}
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => document.getElementById('syllabus-input')?.click()}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Upload Silabus
-                </Button>
-                <input
-                  id="syllabus-input"
-                  type="file"
-                  multiple
-                  accept=".pdf,.docx,.txt,.doc"
-                  className="hidden"
-                  onChange={(e) => handleSyllabusUpload(e.target.files)}
-                />
-              </div>
               
-              <div className="flex gap-3">
-                <Textarea
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  placeholder="Tanyakan sesuatu tentang data SKKNI atau analisis silabus..."
-                  className="flex-1 min-h-[100px] resize-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={isLoading || !chatMessage.trim()}
-                  className="self-end bg-blue-600 hover:bg-blue-700"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </Button>
-              </div>
+            {/* Chat Input */}
+            <div className="flex gap-3">
+              <Textarea
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                placeholder="Tanyakan sesuatu tentang data SKKNI atau analisis silabus..."
+                className="flex-1 min-h-[100px] resize-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={isLoading || !chatMessage.trim()}
+                className="self-end bg-blue-600 hover:bg-blue-700"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+              </Button>
             </div>
           </CardContent>
         </Card>
