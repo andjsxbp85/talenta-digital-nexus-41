@@ -8,10 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
 import * as mammoth from 'mammoth';
 // @ts-ignore
-import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfParse from 'pdf-parse';
 
 // Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -135,18 +135,11 @@ const UploadSKKNI = () => {
       if (file.name.toLowerCase().endsWith('.pdf')) {
         reader.onload = async (e) => {
           try {
-            const typedArray = new Uint8Array(e.target?.result as ArrayBuffer);
-            const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
-            let fullText = '';
-
-            for (let i = 1; i <= pdf.numPages; i++) {
-              const page = await pdf.getPage(i);
-              const content = await page.getTextContent();
-              const pageText = content.items.map((item: any) => item.str).join(' ');
-              fullText += `\n\n--- Halaman ${i} ---\n\n${pageText}`;
-            }
-
-            resolve(fullText || `Tidak dapat membaca teks dari file PDF ${file.name}`);
+            const arrayBuffer = e.target?.result as ArrayBuffer;
+            const dataBuffer = new Uint8Array(arrayBuffer);
+            const pdfData = await pdfParse(dataBuffer);
+            const stringPDF = pdfData.text.slice(0, 10000);
+            resolve(stringPDF || `Tidak dapat membaca teks dari file PDF ${file.name}`);
           } catch (error) {
             resolve(`Error membaca PDF ${file.name}: ${error}`);
           }
