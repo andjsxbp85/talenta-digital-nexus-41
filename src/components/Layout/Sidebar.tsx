@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
   return (
     <div className={cn(
-      "fixed left-0 top-0 h-full bg-white shadow-xl border-r border-gray-200 sidebar-transition z-50",
+      "fixed left-0 top-0 h-full bg-white shadow-xl border-r border-gray-200 transition-all duration-300 z-50",
       collapsed ? "w-16" : "w-64"
     )}>
       {/* Header with Toggle */}
@@ -73,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
           )}
           <button
             onClick={onToggle}
-            className="p-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-white transition-colors"
+            className="p-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-white transition-colors flex items-center justify-center"
           >
             {collapsed ? <Menu className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -92,15 +92,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                 <Link
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                    "flex items-center px-4 py-3 rounded-xl transition-all duration-200 group relative",
                     isActive 
                       ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg" 
                       : "text-gray-700 hover:bg-blue-50 hover:text-blue-600",
-                    collapsed && "justify-center"
+                    collapsed ? "justify-center" : "space-x-3"
                   )}
                   title={collapsed ? item.title : undefined}
                 >
-                  <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-gray-500 group-hover:text-blue-600")} />
+                  <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-white" : "text-gray-500 group-hover:text-blue-600")} />
                   {!collapsed && <span className="font-medium">{item.title}</span>}
                 </Link>
               </li>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -129,28 +128,99 @@ const UploadSKKNI = () => {
       const reader = new FileReader();
       
       if (file.name.toLowerCase().endsWith('.pdf')) {
-        // For PDF files, we need to use a different approach
+        // For PDF files, use a more sophisticated text extraction
         reader.onload = async (e) => {
           try {
             const arrayBuffer = e.target?.result as ArrayBuffer;
-            // This is a simplified PDF text extraction
-            // For production, you might want to use a library like pdf-parse
-            const uint8Array = new Uint8Array(arrayBuffer);
-            let text = '';
             
-            // Simple text extraction from PDF (this is very basic)
-            for (let i = 0; i < uint8Array.length; i++) {
-              const char = String.fromCharCode(uint8Array[i]);
-              if (char.match(/[a-zA-Z0-9\s\.\,\!\?\:\;\-]/)) {
-                text += char;
+            // Convert ArrayBuffer to Uint8Array for better processing
+            const uint8Array = new Uint8Array(arrayBuffer);
+            
+            // Simple PDF text extraction approach
+            let text = '';
+            let isTextMode = false;
+            let currentWord = '';
+            
+            for (let i = 0; i < uint8Array.length - 1; i++) {
+              const byte = uint8Array[i];
+              const nextByte = uint8Array[i + 1];
+              const char = String.fromCharCode(byte);
+              
+              // Look for text objects in PDF
+              if (char === 'B' && String.fromCharCode(nextByte) === 'T') {
+                isTextMode = true;
+                i++; // skip next byte
+                continue;
+              }
+              
+              if (char === 'E' && String.fromCharCode(nextByte) === 'T') {
+                isTextMode = false;
+                if (currentWord.trim()) {
+                  text += currentWord + ' ';
+                  currentWord = '';
+                }
+                i++; // skip next byte
+                continue;
+              }
+              
+              if (isTextMode) {
+                // Extract readable characters
+                if (byte >= 32 && byte <= 126) {
+                  currentWord += char;
+                } else if (byte === 10 || byte === 13) {
+                  if (currentWord.trim()) {
+                    text += currentWord + '\n';
+                    currentWord = '';
+                  }
+                }
+              }
+              
+              // Also look for readable text outside text objects
+              if (!isTextMode && byte >= 32 && byte <= 126 && char.match(/[a-zA-Z0-9\s\.\,\!\?\:\;\-\(\)]/)) {
+                // Look for sequences of readable characters
+                let sequence = '';
+                let j = i;
+                while (j < uint8Array.length && uint8Array[j] >= 32 && uint8Array[j] <= 126) {
+                  sequence += String.fromCharCode(uint8Array[j]);
+                  j++;
+                }
+                
+                if (sequence.length > 3 && sequence.match(/[a-zA-Z]/)) {
+                  text += sequence + ' ';
+                  i = j - 1; // move index forward
+                }
               }
             }
             
             // Clean up the extracted text
-            text = text.replace(/\s+/g, ' ').trim();
+            text = text
+              .replace(/\s+/g, ' ') // Multiple spaces to single space
+              .replace(/\n\s*\n/g, '\n') // Multiple newlines to single newline
+              .trim();
             
+            // If we got very little text, try a different approach
             if (text.length < 100) {
-              text = `PDF content from ${file.name} - Text extraction available but content appears to be image-based or encrypted. File size: ${file.size} bytes, Type: ${file.type}`;
+              // Try to extract any readable ASCII sequences
+              text = '';
+              let tempText = '';
+              
+              for (let i = 0; i < uint8Array.length; i++) {
+                const byte = uint8Array[i];
+                if (byte >= 32 && byte <= 126) {
+                  tempText += String.fromCharCode(byte);
+                } else {
+                  if (tempText.length > 5 && tempText.match(/[a-zA-Z]/)) {
+                    text += tempText + ' ';
+                  }
+                  tempText = '';
+                }
+              }
+              
+              text = text.replace(/\s+/g, ' ').trim();
+            }
+            
+            if (text.length < 50) {
+              text = `PDF file ${file.name} appears to be image-based or encrypted. Size: ${file.size} bytes. Please ensure the PDF contains selectable text.`;
             }
             
             resolve(text);
