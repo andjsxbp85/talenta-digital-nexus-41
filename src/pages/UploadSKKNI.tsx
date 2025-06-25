@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
 import * as mammoth from 'mammoth';
 import { readPdfContent } from '@/components/PdfReader';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -39,6 +41,12 @@ const UploadSKKNI = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [syllabusFiles, setSyllabusFiles] = useState<File[]>([]);
   const { toast } = useToast();
+
+  // Configure marked for better rendering
+  marked.setOptions({
+    breaks: true,
+    gfm: true
+  });
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -288,6 +296,13 @@ const UploadSKKNI = () => {
   const endIndex = startIndex + rowsPerPage;
   const currentData = csvData.slice(startIndex, endIndex);
 
+  // Function to render markdown content safely
+  const renderMarkdown = (content: string) => {
+    const htmlContent = marked(content);
+    const sanitizedContent = DOMPurify.sanitize(htmlContent);
+    return { __html: sanitizedContent };
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-8 animate-fade-in">
@@ -366,15 +381,25 @@ const UploadSKKNI = () => {
           <CardContent className="space-y-4">
             {/* Chat History */}
             {chatHistory.length > 0 && (
-              <div className="max-h-96 overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg resize-y border">
+              <div 
+                className="min-h-96 max-h-[600px] overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg border resize-y"
+                style={{ resize: 'vertical' }}
+              >
                 {chatHistory.map((message, index) => (
                   <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-3xl p-3 rounded-lg ${
                       message.role === 'user' 
                         ? 'bg-blue-600 text-white' 
-                        : 'bg-white text-gray-800 border'
+                        : 'bg-white text-gray-800 border shadow-sm'
                     }`}>
-                      <pre className="whitespace-pre-wrap font-sans">{message.content}</pre>
+                      {message.role === 'user' ? (
+                        <pre className="whitespace-pre-wrap font-sans">{message.content}</pre>
+                      ) : (
+                        <div 
+                          className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-100 prose-pre:border prose-ul:text-gray-700 prose-ol:text-gray-700"
+                          dangerouslySetInnerHTML={renderMarkdown(message.content)}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
