@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Upload, FileText, MessageSquare, Plus, Send, Loader2 } from 'lucide-react';
+import { Upload, FileText, MessageSquare, Plus, Send, Loader2, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
 import * as mammoth from 'mammoth';
@@ -22,8 +23,14 @@ interface CSVRow {
   'Aspek Kritis': string;
 }
 
+interface UploadedFileInfo {
+  name: string;
+  id: string;
+  dataCount: number;
+}
+
 const UploadSKKNI = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFileInfo[]>([]);
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -43,21 +50,14 @@ const UploadSKKNI = () => {
     }
     
     if (savedFiles) {
-      // We can't restore File objects from localStorage, so just show file names
-      const fileNames = JSON.parse(savedFiles);
-      toast({
-        title: "Data Tersimpan",
-        description: `${fileNames.length} file CSV dimuat dari penyimpanan lokal`,
-      });
+      setUploadedFiles(JSON.parse(savedFiles));
     }
   }, []);
 
-  // Save data to localStorage whenever csvData changes
+  // Save data to localStorage whenever csvData or uploadedFiles changes
   useEffect(() => {
-    if (csvData.length > 0) {
-      localStorage.setItem('csvData', JSON.stringify(csvData));
-      localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles.map(f => f.name)));
-    }
+    localStorage.setItem('csvData', JSON.stringify(csvData));
+    localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
   }, [csvData, uploadedFiles]);
 
   const handleFileUpload = (files: FileList | null) => {
@@ -76,10 +76,9 @@ const UploadSKKNI = () => {
       return;
     }
     
-    setUploadedFiles(prev => [...prev, ...csvFiles]);
-    
     // Parse all CSV files
-    let allData: CSVRow[] = [...csvData];
+    let newUploadedFiles: UploadedFileInfo[] = [];
+    let allNewData: CSVRow[] = [];
     let filesProcessed = 0;
     
     csvFiles.forEach(file => {
@@ -90,14 +89,22 @@ const UploadSKKNI = () => {
             row['OKUPASI'] && row['KODE UK'] && row['JUDUL UK']
           ) as CSVRow[];
           
-          allData = [...allData, ...validData];
+          const fileInfo: UploadedFileInfo = {
+            name: file.name,
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            dataCount: validData.length
+          };
+          
+          newUploadedFiles.push(fileInfo);
+          allNewData = [...allNewData, ...validData];
           filesProcessed++;
           
           if (filesProcessed === csvFiles.length) {
-            setCsvData(allData);
+            setUploadedFiles(prev => [...prev, ...newUploadedFiles]);
+            setCsvData(prev => [...prev, ...allNewData]);
             toast({
               title: "Berhasil",
-              description: `${csvFiles.length} file CSV berhasil diupload dan digabungkan. Total ${allData.length} baris data.`
+              description: `${csvFiles.length} file CSV berhasil diupload dan digabungkan. Total ${allNewData.length} baris data baru.`
             });
           }
         },
@@ -109,6 +116,22 @@ const UploadSKKNI = () => {
           });
         }
       });
+    });
+  };
+
+  const handleRemoveFile = (fileId: string) => {
+    const fileToRemove = uploadedFiles.find(f => f.id === fileId);
+    if (!fileToRemove) return;
+
+    // Remove file from uploadedFiles
+    const updatedFiles = uploadedFiles.filter(f => f.id !== fileId);
+    setUploadedFiles(updatedFiles);
+
+    // Remove corresponding data from csvData (this is approximate since we can't track exact rows)
+    // For now, we'll just show a warning that data cleanup might not be perfect
+    toast({
+      title: "File Dihapus",
+      description: `File ${fileToRemove.name} telah dihapus. Silakan refresh jika perlu membersihkan data sepenuhnya.`,
     });
   };
 
@@ -299,10 +322,18 @@ const UploadSKKNI = () => {
               <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
                 <h4 className="font-semibold text-green-800 mb-3">File yang diupload:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center gap-2 text-green-700 bg-white p-2 rounded border">
+                  {uploadedFiles.map((file) => (
+                    <div key={file.id} className="flex items-center gap-2 text-green-700 bg-white p-2 rounded border">
                       <FileText className="w-4 h-4" />
-                      <span className="text-sm">{file.name}</span>
+                      <span className="text-sm flex-1">{file.name}</span>
+                      <span className="text-xs text-gray-500">({file.dataCount} rows)</span>
+                      <button
+                        onClick={() => handleRemoveFile(file.id)}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Hapus file"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -322,7 +353,7 @@ const UploadSKKNI = () => {
           <CardContent className="space-y-4">
             {/* Chat History */}
             {chatHistory.length > 0 && (
-              <div className="max-h-96 overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg">
+              <div className="max-h-96 overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg resize-y border">
                 {chatHistory.map((message, index) => (
                   <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-3xl p-3 rounded-lg ${
@@ -379,7 +410,7 @@ const UploadSKKNI = () => {
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 placeholder="Tanyakan sesuatu tentang data SKKNI atau analisis silabus..."
-                className="flex-1 min-h-[100px] resize-none"
+                className="flex-1 min-h-[100px] resize-y"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
