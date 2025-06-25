@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +20,7 @@ interface CSVRow {
   'JUDUL EK': string;
   'JUDUL KUK': string;
   'Aspek Kritis': string;
+  fileId?: string; // Add fileId to track which file each row belongs to
 }
 
 interface UploadedFileInfo {
@@ -85,13 +85,18 @@ const UploadSKKNI = () => {
       Papa.parse(file, {
         header: true,
         complete: (results) => {
+          const fileId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+          
           const validData = results.data.filter((row: any) => 
             row['OKUPASI'] && row['KODE UK'] && row['JUDUL UK']
-          ) as CSVRow[];
+          ).map((row: any) => ({
+            ...row,
+            fileId: fileId
+          })) as CSVRow[];
           
           const fileInfo: UploadedFileInfo = {
             name: file.name,
-            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            id: fileId,
             dataCount: validData.length
           };
           
@@ -127,11 +132,19 @@ const UploadSKKNI = () => {
     const updatedFiles = uploadedFiles.filter(f => f.id !== fileId);
     setUploadedFiles(updatedFiles);
 
-    // Remove corresponding data from csvData (this is approximate since we can't track exact rows)
-    // For now, we'll just show a warning that data cleanup might not be perfect
+    // Remove corresponding data from csvData based on fileId
+    const updatedCsvData = csvData.filter(row => row.fileId !== fileId);
+    setCsvData(updatedCsvData);
+
+    // Reset pagination if needed
+    const totalPages = Math.ceil(updatedCsvData.length / rowsPerPage);
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+
     toast({
       title: "File Dihapus",
-      description: `File ${fileToRemove.name} telah dihapus. Silakan refresh jika perlu membersihkan data sepenuhnya.`,
+      description: `File ${fileToRemove.name} dan semua datanya telah dihapus.`,
     });
   };
 
