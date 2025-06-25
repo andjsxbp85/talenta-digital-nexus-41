@@ -4,11 +4,7 @@ import { Phone, MessageCircle, Mail, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
-interface FooterProps {
-  collapsed: boolean;
-}
-
-const Footer: React.FC<FooterProps> = ({ collapsed }) => {
+const Footer: React.FC = () => {
   const socialMedia = [
     { name: 'YouTube', url: 'https://youtube.com', icon: '▶️' },
     { name: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
@@ -38,11 +34,11 @@ const Footer: React.FC<FooterProps> = ({ collapsed }) => {
   };
 
   return (
-    <footer className={`bg-gray-900 text-white transition-all duration-300 ${collapsed ? 'ml-16' : 'ml-64'}`}>
+    <footer className="bg-gray-900 text-white static">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Column 1: Logo and Contact */}
-          <div className={`space-y-6 ${collapsed ? '' : 'pl-4'}`}>
+          <div className="space-y-6">
             <div className="space-y-3">
               <div className="w-32 h-16 bg-white rounded-lg flex items-center justify-center">
                 <img 
