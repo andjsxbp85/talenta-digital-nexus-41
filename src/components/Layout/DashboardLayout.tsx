@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import Footer from './Footer';
 import { Navigate } from 'react-router-dom';
 
 interface DashboardLayoutProps {
@@ -33,6 +34,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <main className="flex-1 p-6 bg-gradient-to-br from-gray-50 to-blue-50">
           {children}
         </main>
+        <Footer />
       </div>
     </div>
   );
