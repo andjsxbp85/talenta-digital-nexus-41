@@ -42,7 +42,7 @@ const Header: React.FC = () => {
           {/* Logo Website */}
           <div className="flex items-center space-x-3">
             <div className="w-48 rounded-lg flex items-center justify-center">
-              <img className="bg-opacity-0" src="./dist/assets/pusbangtaldig.png" alt="Description of image" />
+              <img className="bg-opacity-0" src="./assets/pusbangtaldig.png" alt="Description of image" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Dashboard Talenta Digital</h1>
