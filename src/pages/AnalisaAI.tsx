@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,6 +41,7 @@ const AnalisaAI = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [syllabusFiles, setSyllabusFiles] = useState<File[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const { toast } = useToast();
 
   // Configure marked for better rendering
@@ -47,6 +49,13 @@ const AnalisaAI = () => {
     breaks: true,
     gfm: true
   });
+
+  // Chat suggestions
+  const chatSuggestions = [
+    "Buatkan saran perbaikan materi untuk okupasi SQA Engineer dengan PDF Silabus dan CSV peta materi SKKNI ini",
+    "Buatkan silabus materi baru untuk SQA Engineer dengan referensi PDF Silabus berikut",
+    "Buatkan silabus materi baru untuk SQA Engineer dengan referensi peta materi CSV SKKNI ini"
+  ];
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -67,6 +76,13 @@ const AnalisaAI = () => {
     localStorage.setItem('csvData', JSON.stringify(csvData));
     localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
   }, [csvData, uploadedFiles]);
+
+  // Hide suggestions when chat history exists
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      setShowSuggestions(false);
+    }
+  }, [chatHistory]);
 
   const handleFileUpload = (files: FileList | null) => {
     if (!files) return;
@@ -206,6 +222,11 @@ const AnalisaAI = () => {
         };
       }
     });
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setChatMessage(suggestion);
+    setShowSuggestions(false);
   };
 
   const handleSendMessage = async () => {
@@ -443,21 +464,41 @@ const AnalisaAI = () => {
                 </div>
               </div>
             )}
+
+            {/* Chat Suggestions */}
+            {showSuggestions && (
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h4 className="font-semibold text-blue-800 mb-3">Saran Pertanyaan:</h4>
+                <div className="space-y-2">
+                  {chatSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="w-full text-left p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-colors text-sm text-gray-700"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
               
             {/* Chat Input */}
             <div className="flex gap-3">
-              <Textarea
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                placeholder="Tanyakan sesuatu tentang data SKKNI atau analisis silabus..."
-                className="flex-1 min-h-[100px] resize-y"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-              />
+              <div className="flex-1 relative">
+                <Textarea
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  placeholder={showSuggestions ? "Tanyakan sesuatu tentang data SKKNI atau analisis silabus..." : ""}
+                  className="min-h-[100px] resize-y"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                />
+              </div>
               <Button
                 onClick={handleSendMessage}
                 disabled={isLoading || !chatMessage.trim()}
