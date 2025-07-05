@@ -262,7 +262,7 @@ const AnalisaAI = () => {
       if (syllabusFiles.length > 0) {
         syllabusContext = 'Silabus mitra yang tersedia:\n';
         
-        // Use Promise.all to properly handle async file reading
+        // Wait for all file contents to be read
         const fileContents = await Promise.all(
           syllabusFiles.map(async (file) => {
             const content = await readFileContent(file);
