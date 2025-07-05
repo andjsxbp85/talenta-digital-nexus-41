@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,6 +29,12 @@ interface UploadedFileInfo {
   name: string;
   id: string;
   dataCount: number;
+}
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  isRendering?: boolean;
 }
 
 const AnalisaAI = () => {
@@ -264,7 +269,7 @@ const AnalisaAI = () => {
       const fullPrompt = `${fullContext}\n\nPertanyaan: ${chatMessage}`;
       
       // Add user message to chat
-      const newChatHistory = [...chatHistory, { role: 'user', content: chatMessage }];
+      const newChatHistory = [...chatHistory, { role: 'user' as const, content: chatMessage }];
       setChatHistory(newChatHistory);
       setChatMessage('');
       
