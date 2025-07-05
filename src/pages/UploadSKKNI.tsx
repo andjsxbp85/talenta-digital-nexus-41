@@ -22,19 +22,13 @@ interface CSVRow {
   'JUDUL EK': string;
   'JUDUL KUK': string;
   'Aspek Kritis': string;
-  fileId?: string;
+  fileId?: string; // Add fileId to track which file each row belongs to
 }
 
 interface UploadedFileInfo {
   name: string;
   id: string;
   dataCount: number;
-}
-
-interface ChatMessage {
-  role: string;
-  content: string;
-  isRendering?: boolean;
 }
 
 const UploadSKKNI = () => {
@@ -48,7 +42,7 @@ const UploadSKKNI = () => {
   const [syllabusFiles, setSyllabusFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
-  // Configure marked for better rendering with proper options
+  // Configure marked for better rendering
   marked.setOptions({
     breaks: true,
     gfm: true
@@ -304,54 +298,11 @@ const UploadSKKNI = () => {
   const endIndex = startIndex + rowsPerPage;
   const currentData = csvData.slice(startIndex, endIndex);
 
-  // Enhanced function to render markdown content safely with better styling
-  const renderMarkdown = async (content: string) => {
-    try {
-      const htmlContent = await marked.parse(content);
-      const sanitizedContent = DOMPurify.sanitize(htmlContent);
-      return { __html: sanitizedContent };
-    } catch (error) {
-      console.error('Error parsing markdown:', error);
-      // Fallback to plain text if markdown parsing fails
-      return { __html: DOMPurify.sanitize(content.replace(/\n/g, '<br>')) };
-    }
-  };
-
-  // Component to handle async markdown rendering
-  const MarkdownContent = ({ content }: { content: string }) => {
-    const [renderedContent, setRenderedContent] = useState<{ __html: string } | null>(null);
-
-    useEffect(() => {
-      renderMarkdown(content).then(setRenderedContent);
-    }, [content]);
-
-    if (!renderedContent) {
-      return <div className="text-gray-500">Rendering...</div>;
-    }
-
-    return (
-      <div 
-        className="prose prose-sm max-w-none
-          prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mb-3 prose-headings:mt-4
-          prose-h1:text-xl prose-h1:border-b prose-h1:pb-2 prose-h1:border-gray-200
-          prose-h2:text-lg prose-h2:mb-2 prose-h2:mt-3
-          prose-h3:text-base prose-h3:mb-2 prose-h3:mt-3
-          prose-p:text-gray-700 prose-p:mb-3 prose-p:leading-relaxed
-          prose-strong:text-gray-900 prose-strong:font-semibold
-          prose-em:text-gray-800 prose-em:italic
-          prose-ul:text-gray-700 prose-ul:mb-3 prose-ul:pl-4
-          prose-ol:text-gray-700 prose-ol:mb-3 prose-ol:pl-4
-          prose-li:mb-1 prose-li:text-gray-700
-          prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-gray-800
-          prose-pre:bg-gray-100 prose-pre:border prose-pre:rounded prose-pre:p-3 prose-pre:overflow-x-auto
-          prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
-          prose-table:border-collapse prose-table:border prose-table:border-gray-300
-          prose-th:border prose-th:border-gray-300 prose-th:bg-gray-50 prose-th:p-2 prose-th:font-semibold
-          prose-td:border prose-td:border-gray-300 prose-td:p-2
-        "
-        dangerouslySetInnerHTML={renderedContent}
-      />
-    );
+  // Function to render markdown content safely
+  const renderMarkdown = (content: string) => {
+    const htmlContent = marked(content);
+    const sanitizedContent = DOMPurify.sanitize(htmlContent);
+    return { __html: sanitizedContent };
   };
 
   return (
@@ -444,9 +395,12 @@ const UploadSKKNI = () => {
                         : 'bg-white text-gray-800 border shadow-sm'
                     }`}>
                       {message.role === 'user' ? (
-                        <pre className="whitespace-pre-wrap font-sans text-sm">{message.content}</pre>
+                        <pre className="whitespace-pre-wrap font-sans">{message.content}</pre>
                       ) : (
-                        <MarkdownContent content={message.content} />
+                        <div 
+                          className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-100 prose-pre:border prose-ul:text-gray-700 prose-ol:text-gray-700"
+                          dangerouslySetInnerHTML={renderMarkdown(message.content)}
+                        />
                       )}
                     </div>
                   </div>
