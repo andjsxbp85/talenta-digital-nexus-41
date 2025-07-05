@@ -31,7 +31,7 @@ interface UploadedFileInfo {
   dataCount: number;
 }
 
-const UploadSKKNI = () => {
+const AnalisaAI = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFileInfo[]>([]);
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -560,4 +560,4 @@ const UploadSKKNI = () => {
   );
 };
 
-export default UploadSKKNI;
+export default AnalisaAI;

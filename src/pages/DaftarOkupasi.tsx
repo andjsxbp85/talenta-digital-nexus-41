@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Lightbulb, Download, FileText, TrendingUp, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const Rekomendasi = () => {
+const DaftarOkupasi = () => {
   const [selectedOkupasi, setSelectedOkupasi] = useState('');
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -258,4 +258,4 @@ const Rekomendasi = () => {
   );
 };
 
-export default Rekomendasi;
+export default DaftarOkupasi;

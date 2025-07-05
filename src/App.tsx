@@ -8,9 +8,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import UploadSKKNI from "./pages/UploadSKKNI";
+import AnalisaAI from "./pages/AnalisaAI";
 import PetaMitra from "./pages/PetaMitra";
-import Rekomendasi from "./pages/Rekomendasi";
+import DaftarOkupasi from "./pages/DaftarOkupasi";
 import AdminPanel from "./pages/AdminPanel";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
@@ -27,9 +27,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/analisa-ai" element={<UploadSKKNI />} />
+            <Route path="/analisa-ai" element={<AnalisaAI />} />
             <Route path="/peta-mitra" element={<PetaMitra />} />
-            <Route path="/rekomendasi" element={<Rekomendasi />} />
+            <Route path="/daftar-okupasi" element={<DaftarOkupasi />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="*" element={<NotFound />} />
