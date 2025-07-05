@@ -1,17 +1,34 @@
-
 import React from 'react';
 import { Phone, MessageCircle, Mail, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
+// ======== Font Awesome ========
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faYoutube,
+  faTwitter,
+  faInstagram,
+  faLinkedin,
+  faTiktok,
+} from '@fortawesome/free-brands-svg-icons';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+// ==============================
+
 const Footer: React.FC = () => {
-  const socialMedia = [
-    { name: 'YouTube', url: 'https://youtube.com', icon: '▶️' },
-    { name: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
-    { name: 'Instagram', url: 'https://instagram.com', icon: '📷' },
-    { name: 'LinkedIn', url: 'https://linkedin.com', icon: '💼' },
-    { name: 'TikTok', url: 'https://tiktok.com', icon: '🎵' },
-    { name: 'Website', url: 'https://komdigi.go.id', icon: '🌐' },
+  // ——— socialMedia sekarang memakai objek ikon Font Awesome ———
+  const socialMedia: {
+    name: string;
+    url: string;
+    icon: IconDefinition;
+  }[] = [
+    { name: 'YouTube',  url: 'https://youtube.com',   icon: faYoutube  },
+    { name: 'Twitter',  url: 'https://twitter.com',   icon: faTwitter  },
+    { name: 'Instagram',url: 'https://instagram.com', icon: faInstagram},
+    { name: 'LinkedIn', url: 'https://linkedin.com',  icon: faLinkedin },
+    { name: 'TikTok',   url: 'https://tiktok.com',    icon: faTiktok   },
+    { name: 'Website',  url: 'https://komdigi.go.id', icon: faGlobe    },
   ];
 
   const staffMembers = {
@@ -37,13 +54,13 @@ const Footer: React.FC = () => {
     <footer className="bg-gray-900 text-white static">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Column 1: Logo and Contact */}
+          {/* Column 1: Logo dan Kontak */}
           <div className="space-y-6">
             <div className="space-y-3">
-              <div className="w-32 h-16 bg-white rounded-lg flex items-center justify-center">
-                <img 
-                  src="./assets/pusbangtaldig.png" 
-                  alt="Logo Komdigi" 
+              <div className="w-full h-16 rounded-lg flex items-center justify-left">
+                <img
+                  src="./assets/pusbangtaldig.png"
+                  alt="Logo Komdigi"
                   className="max-w-full max-h-full object-contain"
                 />
               </div>
@@ -74,7 +91,7 @@ const Footer: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-medium text-blue-300">Follow Us</h4>
+              <h4 className="font-medium text-blue-300">Follow Us</h4>
               <div className="flex space-x-3">
                 {socialMedia.map((social, index) => (
                   <a
@@ -82,17 +99,19 @@ const Footer: React.FC = () => {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors duration-200"
+                    className="w-10 h-10 bg-blue-600 hover:bg-blue-500
+                               rounded-full flex items-center justify-center
+                               transition-colors duration-200"
                     title={social.name}
                   >
-                    <span className="text-lg">{social.icon}</span>
+                    <FontAwesomeIcon icon={social.icon} size="lg" />
                   </a>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Column 2: Location and Maps */}
+          {/* Column 2: Lokasi & Peta */}
           <div className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
@@ -100,43 +119,43 @@ const Footer: React.FC = () => {
                 <div>
                   <h4 className="font-medium text-blue-300 mb-2">Lokasi Kami</h4>
                   <p className="text-sm text-gray-300 leading-relaxed">
-                    Jl. Medan Merdeka Barat No.9 2, RT.2/RW.3, Gambir, 
-                    Kecamatan Gambir, Kota Jakarta Pusat, 
-                    Daerah Khusus Ibukota Jakarta 10110
+                    Jl. Medan Merdeka Barat No.9 2, RT.2/RW.3, Gambir,
+                    Kecamatan Gambir, Kota Jakarta Pusat,
+                    Daerah Khusus Ibukota Jakarta 10110
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-lg overflow-hidden">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d276.9942561810362!2d106.82133181971314!3d-6.175044325712825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f53c4609fd3f%3A0x1f3f7d19294ba74f!2sJl.%20Medan%20Merdeka%20Barat%20No.9%202%2C%20RT.2%2FRW.3%2C%20Gambir%2C%20Kecamatan%20Gambir%2C%20Kota%20Jakarta%20Pusat%2C%20Daerah%20Khusus%20Ibukota%20Jakarta%2010110!5e0!3m2!1sen!2sid!4v1750834212153!5m2!1sen!2sid" 
-                width="100%" 
-                height="250" 
-                className="border-0 rounded-lg" 
-                allowFullScreen={true}
-                loading="lazy" 
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d276.9942561810362!2d106.82133181971314!3d-6.175044325712825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f53c4609fd3f%3A0x1f3f7d19294ba74f!2sJl.%20Medan%20Merdeka%20Barat%20No.9%202%2C%20RT.2%2FRW.3%2C%20Gambir%2C%20Kecamatan%20Gambir%2C%20Kota%20Jakarta%20Pusat%2C%20Daerah%20Khusus%20Ibukota%20Jakarta%2010110!5e0!3m2!1sen!2sid!4v1750834212153!5m2!1sen!2sid"
+                width="100%"
+                height="250"
+                className="border-0 rounded-lg"
+                allowFullScreen
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title="Lokasi BPSDM Komdigi"
               />
             </div>
           </div>
 
-          {/* Column 3: Staff Information */}
+          {/* Column 3: Staff */}
           <div className="space-y-6">
             <h4 className="font-medium text-blue-300">Our Beloved Staff</h4>
-            
+
             {/* Leadership */}
             <div className="space-y-3">
               {staffMembers.leadership.map((staff, index) => (
                 <div key={index} className="space-y-1">
-                  <Badge 
-                    variant="secondary" 
+                  <p className="text-sm font-medium text-gray-300">{staff.role}</p>
+                  <Badge
+                    variant="secondary"
                     className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1"
                   >
                     {staff.name}
                   </Badge>
-                  <p className="text-xs text-gray-400 ml-1">{staff.role}</p>
                 </div>
               ))}
             </div>
@@ -148,9 +167,9 @@ const Footer: React.FC = () => {
               <h5 className="text-sm font-medium text-gray-300">Tim Anggota</h5>
               <div className="flex flex-wrap gap-2">
                 {staffMembers.members.map((member, index) => (
-                  <Badge 
+                  <Badge
                     key={index}
-                    variant="outline" 
+                    variant="outline"
                     className="border-gray-600 text-gray-300 hover:bg-gray-800 text-xs px-2 py-1"
                   >
                     {member}
@@ -162,12 +181,12 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Copyright Section */}
+      {/* Bottom Copyright */}
       <div className="border-t border-gray-700">
         <div className="container mx-auto px-6 py-4">
           <div className="text-center">
             <p className="text-sm text-gray-400">
-              © 2025 Tim Pengembangan Materi Standar Pelatihan dan Pembelajaran - BPSDM Komdigi. All Rights Reserved
+              © 2025 Tim Pengembangan Materi Standar Pelatihan dan Pembelajaran – BPSDM Komdigi. All Rights Reserved
             </p>
           </div>
         </div>

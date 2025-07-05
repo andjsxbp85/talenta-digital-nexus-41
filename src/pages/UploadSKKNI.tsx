@@ -37,7 +37,7 @@ const UploadSKKNI = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [chatMessage, setChatMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState<Array<{role: string, content: string}>>([]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [syllabusFiles, setSyllabusFiles] = useState<File[]>([]);
   const { toast } = useToast();
@@ -269,7 +269,9 @@ const UploadSKKNI = () => {
       const data = await response.json();
       const aiResponse = data.candidates[0].content.parts[0].text;
       
-      setChatHistory([...newChatHistory, { role: 'assistant', content: aiResponse }]);
+      // Add AI response with rendering flag
+      const aiMessage: ChatMessage = { role: 'assistant', content: aiResponse, isRendering: true };
+      setChatHistory([...newChatHistory, aiMessage]);
       
     } catch (error) {
       toast({
@@ -387,7 +389,7 @@ const UploadSKKNI = () => {
               >
                 {chatHistory.map((message, index) => (
                   <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-3xl p-3 rounded-lg ${
+                    <div className={`max-w-3xl p-4 rounded-lg ${
                       message.role === 'user' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-white text-gray-800 border shadow-sm'
