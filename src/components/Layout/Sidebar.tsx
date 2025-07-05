@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Home,
-  Upload,
+  Brain,
   Map,
   Lightbulb,
   Settings,
@@ -31,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
     {
       title: 'Analisa AI',
       href: '/upload-skkni',
-      icon: Upload,
+      icon: Brain,
       show: true
     },
     {
@@ -67,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
           {!collapsed && (
             <div className="text-white">
               <h2 className="text-xl font-bold">Pusbang Taldig</h2>
-              <p className="text-sm text-blue-100">Kemenkominfo</p>
+              <p className="text-sm text-blue-100">Kemenkomdigi</p>
             </div>
           )}
           <button
