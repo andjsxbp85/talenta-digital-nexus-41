@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +24,7 @@ interface CSVRow {
   'JUDUL EK': string;
   'JUDUL KUK': string;
   'Aspek Kritis': string;
-  fileId?: string; // Add fileId to track which file each row belongs to
+  fileId?: string;
 }
 
 interface UploadedFileInfo {
