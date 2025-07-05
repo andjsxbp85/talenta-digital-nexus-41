@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
     },
     {
       title: 'Daftar Okupasi',
-      href: '/rekomendasi',
+      href: '/daftar-okupasi',
       icon: Lightbulb,
       show: true
     },
