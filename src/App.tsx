@@ -27,7 +27,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/upload-skkni" element={<UploadSKKNI />} />
+            <Route path="/analisa-ai" element={<UploadSKKNI />} />
             <Route path="/peta-mitra" element={<PetaMitra />} />
             <Route path="/rekomendasi" element={<Rekomendasi />} />
             <Route path="/admin" element={<AdminPanel />} />

@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
     },
     {
       title: 'Analisa AI',
-      href: '/upload-skkni',
+      href: '/analisa-ai',
       icon: Brain,
       show: true
     },
