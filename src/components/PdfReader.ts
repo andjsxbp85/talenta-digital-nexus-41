@@ -1,7 +1,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const readPdfContent = async (file) => {
+export const readPdfContent = async (file: File): Promise<string> => {
   try {
     const apiKey = localStorage.getItem('geminiApiKey');
     if (!apiKey) {
@@ -48,7 +48,7 @@ export const readPdfContent = async (file) => {
 
     return text || `Tidak dapat membaca teks dari file PDF ${file.name}`;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('PDF reading error with Gemini:', error);
     
     if (error.message.includes('API Key')) {
