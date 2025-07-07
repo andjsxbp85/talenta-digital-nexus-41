@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -81,7 +82,7 @@ const Dashboard = () => {
             <CardTitle className="text-xl font-semibold text-gray-800">Analytics Dashboard</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
+            <div style={{ position: 'relative', paddingBottom: '168.75%', height: 0, overflow: 'hidden' }}>
               <iframe 
                 src="https://lookerstudio.google.com/embed/reporting/78d58971-02ce-445c-83b8-cde8d84c714c/page/KPcNF"
                 frameBorder="0"

@@ -1,7 +1,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const readPdfContent = async (file) => {
+export const readPdfContent = async (file: File): Promise<string> => {
   try {
     const apiKey = localStorage.getItem('geminiApiKey');
     if (!apiKey) {
@@ -9,46 +9,22 @@ export const readPdfContent = async (file) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-
-    // Upload file to Gemini
-    console.log('Uploading file to Gemini...');
-    const uploadResponse = await genAI.files.upload({
-      file: file,
-      config: { 
-        mimeType: file.type || 'application/pdf',
-        displayName: file.name 
-      },
-    });
-
-    console.log('File uploaded successfully:', uploadResponse.file.uri);
-
-    // Generate content using the uploaded file
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    // Convert file to base64 for Gemini API
+    const fileData = await fileToGenerativePart(file);
     
     const result = await model.generateContent([
-      {
-        fileData: {
-          mimeType: uploadResponse.file.mimeType,
-          fileUri: uploadResponse.file.uri
-        }
-      },
+      fileData,
       "Ekstrak semua teks dari dokumen PDF ini. Berikan dalam format yang mudah dibaca dan terstruktur."
     ]);
 
     const response = await result.response;
     const text = response.text();
 
-    // Delete the uploaded file after processing
-    try {
-      await genAI.files.delete(uploadResponse.file.name);
-      console.log('Temporary file deleted from Gemini');
-    } catch (deleteError) {
-      console.warn('Failed to delete temporary file:', deleteError);
-    }
-
     return text || `Tidak dapat membaca teks dari file PDF ${file.name}`;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('PDF reading error with Gemini:', error);
     
     if (error.message.includes('API Key')) {
@@ -62,3 +38,22 @@ export const readPdfContent = async (file) => {
     }
   }
 };
+
+// Helper function to convert file to GenerativePart
+async function fileToGenerativePart(file: File) {
+  const base64EncodedDataPromise = new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = (reader.result as string).split(',')[1];
+      resolve(base64String);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  return {
+    inlineData: {
+      data: await base64EncodedDataPromise,
+      mimeType: file.type,
+    },
+  };
+}

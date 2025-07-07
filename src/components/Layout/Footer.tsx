@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Phone, MessageCircle, Mail, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
-// ======== Font Awesome ========
+// ======== Font Awesome ========
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faYoutube,
@@ -17,7 +18,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 // ==============================
 
 const Footer: React.FC = () => {
-  // ——— socialMedia sekarang memakai objek ikon Font Awesome ———
+  // ——— socialMedia sekarang memakai objek ikon Font Awesome ———
   const socialMedia: {
     name: string;
     url: string;
@@ -54,7 +55,7 @@ const Footer: React.FC = () => {
     <footer className="bg-gray-900 text-white static">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Column 1: Logo dan Kontak */}
+          {/* Column 1: Logo dan Kontak */}
           <div className="space-y-6">
             <div className="space-y-3">
               <div className="w-full h-16 rounded-lg flex items-center justify-left">
@@ -77,7 +78,7 @@ const Footer: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
                   <Phone className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm">0213810678</span>
+                  <span className="text-sm">021 - 3810678</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MessageCircle className="w-4 h-4 text-green-400" />
@@ -87,11 +88,15 @@ const Footer: React.FC = () => {
                   <Mail className="w-4 h-4 text-red-400" />
                   <span className="text-sm">fga.dtskominfo@gmail.com</span>
                 </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-red-400" />
+                  <span className="text-sm">tpmtalentadigital@gmail.com</span>
+                </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-medium text-blue-300">Follow Us</h4>
+              <h4 className="font-medium text-blue-300">Follow Us</h4>
               <div className="flex space-x-3">
                 {socialMedia.map((social, index) => (
                   <a
@@ -111,7 +116,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 2: Lokasi & Peta */}
+          {/* Column 2: Lokasi & Peta */}
           <div className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
@@ -119,9 +124,9 @@ const Footer: React.FC = () => {
                 <div>
                   <h4 className="font-medium text-blue-300 mb-2">Lokasi Kami</h4>
                   <p className="text-sm text-gray-300 leading-relaxed">
-                    Jl. Medan Merdeka Barat No.9 2, RT.2/RW.3, Gambir,
+                    Jl. Medan Merdeka Barat No.9 2, RT.2/RW.3, Gambir,
                     Kecamatan Gambir, Kota Jakarta Pusat,
-                    Daerah Khusus Ibukota Jakarta 10110
+                    Daerah Khusus Ibukota Jakarta 10110
                   </p>
                 </div>
               </div>
@@ -141,7 +146,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 3: Staff */}
+          {/* Column 3: Staff */}
           <div className="space-y-6">
             <h4 className="font-medium text-blue-300">Our Beloved Staff</h4>
 
@@ -186,7 +191,7 @@ const Footer: React.FC = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="text-center">
             <p className="text-sm text-gray-400">
-              © 2025 Tim Pengembangan Materi Standar Pelatihan dan Pembelajaran – BPSDM Komdigi. All Rights Reserved
+              © 2025 Tim Pengembangan Materi Standar Pelatihan dan Pembelajaran – BPSDM Komdigi. All Rights Reserved
             </p>
           </div>
         </div>
