@@ -190,17 +190,17 @@ const AnalisaAI = () => {
   };
 
   const readFileContent = async (file: File): Promise<string> => {
-    return new Promise(async (resolve, reject) => {
-      if (file.name.toLowerCase().endsWith('.pdf')) {
-        // Use the new Gemini-based PDF reader
-        try {
-          const content = await readPdfContent(file);
-          resolve(content);
-        } catch (error) {
-          console.error('PDF reading error:', error);
-          resolve(`Error membaca PDF ${file.name}: ${error}`);
-        }
-      } else if (file.name.toLowerCase().endsWith('.docx')) {
+    if (file.name.toLowerCase().endsWith('.pdf')) {
+      // Use the new Gemini-based PDF reader
+      try {
+        const content = await readPdfContent(file);
+        return content;
+      } catch (error) {
+        console.error('PDF reading error:', error);
+        return `Error membaca PDF ${file.name}: ${error}`;
+      }
+    } else if (file.name.toLowerCase().endsWith('.docx')) {
+      return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = async (e) => {
           try {
@@ -215,7 +215,9 @@ const AnalisaAI = () => {
         reader.onerror = () => {
           resolve(`Error reading file ${file.name}`);
         };
-      } else {
+      });
+    } else {
+      return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
           const content = e.target?.result as string;
@@ -225,8 +227,8 @@ const AnalisaAI = () => {
         reader.onerror = () => {
           resolve(`Error reading file ${file.name}`);
         };
-      }
-    });
+      });
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
