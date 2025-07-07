@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -262,10 +263,14 @@ const AnalisaAI = () => {
       if (syllabusFiles.length > 0) {
         syllabusContext = 'Silabus mitra yang tersedia:\n';
         
-        // Process all files sequentially to avoid Promise issues
+        // Process all files sequentially and await each one
         for (const file of syllabusFiles) {
-          const content = await readFileContent(file);
-          syllabusContext += `\n--- ${file.name} ---\n${content}\n`;
+          try {
+            const content = await readFileContent(file);
+            syllabusContext += `\n--- ${file.name} ---\n${content}\n`;
+          } catch (error) {
+            syllabusContext += `\n--- ${file.name} ---\nError reading file: ${error}\n`;
+          }
         }
       }
       
