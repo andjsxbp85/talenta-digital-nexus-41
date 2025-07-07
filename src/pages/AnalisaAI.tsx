@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -262,15 +260,11 @@ const AnalisaAI = () => {
       if (syllabusFiles.length > 0) {
         syllabusContext = 'Silabus mitra yang tersedia:\n';
         
-        // Wait for all file contents to be read
-        const fileContents = await Promise.all(
-          syllabusFiles.map(async (file) => {
-            const content = await readFileContent(file);
-            return `\n--- ${file.name} ---\n${content}\n`;
-          })
-        );
-        
-        syllabusContext += fileContents.join('');
+        // Process all files sequentially to avoid Promise issues
+        for (const file of syllabusFiles) {
+          const content = await readFileContent(file);
+          syllabusContext += `\n--- ${file.name} ---\n${content}\n`;
+        }
       }
       
       const fullContext = `${csvContext}\n\n${syllabusContext}`;
