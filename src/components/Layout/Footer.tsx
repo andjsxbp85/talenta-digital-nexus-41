@@ -36,6 +36,7 @@ const Footer: React.FC = () => {
     leadership: [
       { name: 'Dr. Said Mirza Pahlevi', role: 'Kepala Pusat Pengembangan Talenta Digital' },
       { name: 'Anny Triana', role: 'Ketua Tim Pengembangan Materi Standar Pelatihan dan Pembelajaran' },
+      { name: 'Faiq Wildana', role: 'Wakil Ketua Tim Pengembangan Materi Standar Pelatihan dan Pembelajaran' },
     ],
     members: [
       'Anjas Muhammad Bangun',
@@ -136,7 +137,7 @@ const Footer: React.FC = () => {
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d276.9942561810362!2d106.82133181971314!3d-6.175044325712825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f53c4609fd3f%3A0x1f3f7d19294ba74f!2sJl.%20Medan%20Merdeka%20Barat%20No.9%202%2C%20RT.2%2FRW.3%2C%20Gambir%2C%20Kecamatan%20Gambir%2C%20Kota%20Jakarta%20Pusat%2C%20Daerah%20Khusus%20Ibukota%20Jakarta%2010110!5e0!3m2!1sen!2sid!4v1750834212153!5m2!1sen!2sid"
                 width="100%"
-                height="250"
+                height="350"
                 className="border-0 rounded-lg"
                 allowFullScreen
                 loading="lazy"
@@ -169,7 +170,7 @@ const Footer: React.FC = () => {
 
             {/* Team Members */}
             <div className="space-y-3">
-              <h5 className="text-sm font-medium text-gray-300">Tim Anggota</h5>
+              <h5 className="text-sm font-medium text-gray-300">Anggota Tim</h5>
               <div className="flex flex-wrap gap-2">
                 {staffMembers.members.map((member, index) => (
                   <Badge
