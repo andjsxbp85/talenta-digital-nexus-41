@@ -334,7 +334,7 @@ const AnalisaAI = () => {
 
   // Function to render markdown content safely
   const renderMarkdown = (content: string) => {
-    const htmlContent = marked(content);
+    const htmlContent = marked(content, { async: false }) as string;
     const sanitizedContent = DOMPurify.sanitize(htmlContent);
     return { __html: sanitizedContent };
   };

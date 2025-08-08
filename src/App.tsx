@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
+import ComingSoon from "./pages/ComingSoon";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AnalisaAI from "./pages/AnalisaAI";
@@ -25,7 +25,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<ComingSoon />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/analisa-ai" element={<AnalisaAI />} />
             <Route path="/peta-mitra" element={<PetaMitra />} />
