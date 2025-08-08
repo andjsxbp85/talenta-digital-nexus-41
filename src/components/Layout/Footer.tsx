@@ -87,17 +87,29 @@ const Footer: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-red-400" />
-                  <span className="text-sm">fga.dtskominfo@gmail.com</span>
+                  <span className="text-sm">Tim 1: konten@pusbangtalentadigital.id</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-red-400" />
-                  <span className="text-sm">tpmtalentadigital@gmail.com</span>
+                  <span className="text-sm">Tim 2: vokasi@pusbangtalentadigital.id</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-red-400" />
+                  <span className="text-sm">Tim 3: pelatihan@pusbangtalentadigital.id</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-red-400" />
+                  <span className="text-sm">Tim 4: dtp@pusbangtalentadigital.id</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-4 h-4 text-red-400" />
+                  <span className="text-sm">Tim 5: data@pusbangtalentadigital.id</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-medium text-blue-300">Follow Us</h4>
+              <h4 className="font-medium text-blue-300">Ikuti Kami</h4>
               <div className="flex space-x-3">
                 {socialMedia.map((social, index) => (
                   <a
@@ -125,9 +137,10 @@ const Footer: React.FC = () => {
                 <div>
                   <h4 className="font-medium text-blue-300 mb-2">Lokasi Kami</h4>
                   <p className="text-sm text-gray-300 leading-relaxed">
-                    Jl. Medan Merdeka Barat No.9 2, RT.2/RW.3, Gambir,
+                    Lantai 5 Gedung B Komdigi, Jl. Medan Merdeka Barat
+                    No. 9 2, RT.2/RW.3, Gambir,
                     Kecamatan Gambir, Kota Jakarta Pusat,
-                    Daerah Khusus Ibukota Jakarta 10110
+                    Daerah Khusus Ibukota Jakarta (10110)
                   </p>
                 </div>
               </div>

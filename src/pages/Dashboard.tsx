@@ -8,29 +8,29 @@ import GeminiConnection from '@/components/GeminiConnection';
 const Dashboard = () => {
   const stats = [
     {
-      title: 'Total SKKNI',
-      value: '1,234',
+      title: 'Learning Path (LP)',
+      value: '16',
       icon: FileText,
       change: '+12%',
       color: 'text-blue-600'
     },
     {
-      title: 'Mitra Aktif',
-      value: '89',
+      title: 'Mitra',
+      value: '12',
       icon: Users,
       change: '+8%',
       color: 'text-green-600'
     },
     {
-      title: 'Okupasi',
-      value: '45',
+      title: 'Unit Kompetensi (UK)',
+      value: '69',
       icon: TrendingUp,
       change: '+15%',
       color: 'text-purple-600'
     },
     {
-      title: 'Rekomendasi',
-      value: '156',
+      title: 'Topik',
+      value: '164',
       icon: Settings,
       change: '+23%',
       color: 'text-orange-600'
@@ -65,7 +65,7 @@ const Dashboard = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-600">{stat.title}</p>
                     <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                    <p className={`text-sm font-medium ${stat.color}`}>{stat.change} dari bulan lalu</p>
+                    <p className={`text-sm font-medium ${stat.color}`}>{stat.change} dari triwulan sebelumnya</p>
                   </div>
                   <div className={`p-3 rounded-xl bg-gray-50`}>
                     <stat.icon className={`w-6 h-6 ${stat.color}`} />

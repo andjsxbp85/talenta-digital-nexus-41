@@ -45,7 +45,7 @@ const Header: React.FC = () => {
               <img className="bg-opacity-0" src="./assets/pusbangtaldig.png" alt="Description of image" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard Talenta Digital</h1>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-teal-500 to-sky-500 bg-clip-text text-transparent mt-2">Dashboard Talenta Digital</h1>
             </div>
           </div>
         </div>
