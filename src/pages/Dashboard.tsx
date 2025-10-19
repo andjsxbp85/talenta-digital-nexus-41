@@ -23,7 +23,7 @@ const Dashboard = () => {
     },
     {
       title: 'Unit Kompetensi (UK)',
-      value: '69',
+      value: '73',
       icon: TrendingUp,
       change: '+15%',
       color: 'text-purple-600'
