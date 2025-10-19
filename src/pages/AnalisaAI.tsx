@@ -572,6 +572,7 @@ const AnalisaAI = () => {
                       <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-800">KODE UK</th>
                       <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-800">JUDUL UK</th>
                       <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-800">JUDUL EK</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-800">JUDUL KUK</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -582,6 +583,7 @@ const AnalisaAI = () => {
                         <td className="border border-gray-200 px-4 py-3 text-sm font-mono text-blue-600">{row['KODE UK']}</td>
                         <td className="border border-gray-200 px-4 py-3 text-sm">{row['JUDUL UK']}</td>
                         <td className="border border-gray-200 px-4 py-3 text-sm">{row['JUDUL EK']}</td>
+                        <td className="border border-gray-200 px-4 py-3 text-sm">{row['JUDUL KUK']}</td>
                       </tr>
                     ))}
                   </tbody>
