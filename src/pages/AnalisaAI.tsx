@@ -471,7 +471,20 @@ const AnalisaAI = () => {
                   {syllabusFiles.map((file, index) => (
                     <div key={index} className="flex items-center gap-2 text-yellow-700 bg-white p-2 rounded border">
                       <FileText className="w-4 h-4" />
-                      <span className="text-sm">{file.name}</span>
+                      <span className="text-sm flex-1">{file.name}</span>
+                      <button
+                        onClick={() => {
+                          setSyllabusFiles(prev => prev.filter((_, i) => i !== index));
+                          toast({
+                            title: "File Dihapus",
+                            description: `File ${file.name} telah dihapus dari silabus.`,
+                          });
+                        }}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Hapus file"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
                     </div>
                   ))}
                 </div>
