@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,9 @@ const AnalisaAI = () => {
   const [syllabusFiles, setSyllabusFiles] = useState<File[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const { toast } = useToast();
+  
+  // Ref untuk menyimpan chat session agar persistent
+  const chatSessionRef = useRef<any>(null);
 
   // Configure marked for better rendering
   marked.setOptions({
@@ -80,6 +83,28 @@ const AnalisaAI = () => {
     localStorage.setItem('csvData', JSON.stringify(csvData));
     localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
   }, [csvData, uploadedFiles]);
+
+  // Initialize Gemini chat session
+  useEffect(() => {
+    const initializeChat = async () => {
+      try {
+        const apiKey = localStorage.getItem('geminiApiKey');
+        if (!apiKey) return;
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        
+        // Membuat chat session baru dengan history kosong
+        chatSessionRef.current = model.startChat({
+          history: [],
+        });
+        console.log("Chat session berhasil diinisialisasi.");
+      } catch (error) {
+        console.error("Inisialisasi chat session gagal:", error);
+      }
+    };
+    initializeChat();
+  }, []);
 
   // Hide suggestions when chat history exists
   useEffect(() => {
@@ -225,13 +250,18 @@ const AnalisaAI = () => {
       return;
     }
 
+    if (!chatSessionRef.current) {
+      toast({
+        title: "Error",
+        description: "Chat session belum diinisialisasi, silakan tunggu sebentar",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // Initialize Gemini AI
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-      
       // Prepare context from CSV data
       const csvContext = csvData.length > 0 
         ? `Data SKKNI yang tersedia (${csvData.length} baris):\n${JSON.stringify(csvData, null, 2)}` 
@@ -261,8 +291,10 @@ const AnalisaAI = () => {
         }
       }
       
-      // Send to Gemini in 1 request with all files
-      const result = await model.generateContent(contentParts);
+      // Gunakan chat session untuk mengirim pesan
+      // Chat session akan otomatis menyimpan riwayat percakapan
+      const chat = chatSessionRef.current;
+      const result = await chat.sendMessage(contentParts);
       const response = await result.response;
       const aiResponse = response.text();
       
