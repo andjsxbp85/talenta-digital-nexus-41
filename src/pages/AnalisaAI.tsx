@@ -6,10 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Upload, FileText, MessageSquare, Plus, Send, Loader2, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Papa from 'papaparse';
-import * as mammoth from 'mammoth';
-import { readPdfContent } from '@/components/PdfReader';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface CSVRow {
   'AREA FUNGSI KUNCI': string;
@@ -189,46 +188,23 @@ const AnalisaAI = () => {
     });
   };
 
-  const readFileContent = async (file: File): Promise<string> => {
-    if (file.name.toLowerCase().endsWith('.pdf')) {
-      // Use the new Gemini-based PDF reader
-      try {
-        const content = await readPdfContent(file);
-        return content;
-      } catch (error) {
-        console.error('PDF reading error:', error);
-        return `Error membaca PDF ${file.name}: ${error}`;
-      }
-    } else if (file.name.toLowerCase().endsWith('.docx')) {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          try {
-            const arrayBuffer = e.target?.result as ArrayBuffer;
-            const result = await mammoth.extractRawText({ arrayBuffer });
-            resolve(result.value || `No text content found in ${file.name}`);
-          } catch (error) {
-            resolve(`Error extracting DOCX content from ${file.name}: ${error}`);
-          }
-        };
-        reader.readAsArrayBuffer(file);
-        reader.onerror = () => {
-          resolve(`Error reading file ${file.name}`);
-        };
-      });
-    } else {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const content = e.target?.result as string;
-          resolve(content);
-        };
-        reader.readAsText(file);
-        reader.onerror = () => {
-          resolve(`Error reading file ${file.name}`);
-        };
-      });
-    }
+  // Helper function to convert file to GenerativePart for Gemini API
+  const fileToGenerativePart = async (file: File) => {
+    const base64EncodedDataPromise = new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = (reader.result as string).split(',')[1];
+        resolve(base64String);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    return {
+      inlineData: {
+        data: await base64EncodedDataPromise,
+        mimeType: file.type,
+      },
+    };
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -252,65 +228,53 @@ const AnalisaAI = () => {
     setIsLoading(true);
     
     try {
+      // Initialize Gemini AI
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      
       // Prepare context from CSV data
       const csvContext = csvData.length > 0 
         ? `Data SKKNI yang tersedia (${csvData.length} baris):\n${JSON.stringify(csvData, null, 2)}` 
         : '';
       
-      // Prepare context from syllabus files
-      let syllabusContext = '';
-      if (syllabusFiles.length > 0) {
-        syllabusContext = 'Silabus mitra yang tersedia:\n';
-        
-        // Process all files sequentially and await each one
-        for (const file of syllabusFiles) {
-          try {
-            const content = await readFileContent(file);
-            syllabusContext += `\n--- ${file.name} ---\n${content}\n`;
-          } catch (error) {
-            syllabusContext += `\n--- ${file.name} ---\nError reading file: ${error}\n`;
-          }
-        }
-      }
-      
-      const fullContext = `${csvContext}\n\n${syllabusContext}`;
-      const fullPrompt = `${fullContext}\n\nPertanyaan: ${chatMessage}`;
+      // Build prompt with CSV context
+      let fullPrompt = csvContext ? `${csvContext}\n\n` : '';
+      fullPrompt += `Pertanyaan: ${chatMessage}`;
       
       // Add user message to chat
       const newChatHistory = [...chatHistory, { role: 'user' as const, content: chatMessage }];
       setChatHistory(newChatHistory);
       setChatMessage('');
       
-      // Calling gemini API 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: fullPrompt
-            }]
-          }]
-        })
-      });
+      // Prepare content parts: text + all PDF files
+      const contentParts: any[] = [{ text: fullPrompt }];
       
-      if (!response.ok) {
-        throw new Error('Gagal menghubungi Gemini API');
+      // Add all syllabus files directly to the request
+      if (syllabusFiles.length > 0) {
+        for (const file of syllabusFiles) {
+          try {
+            const filePart = await fileToGenerativePart(file);
+            contentParts.push(filePart);
+          } catch (error) {
+            console.error(`Error processing file ${file.name}:`, error);
+          }
+        }
       }
       
-      const data = await response.json();
-      const aiResponse = data.candidates[0].content.parts[0].text;
+      // Send to Gemini in 1 request with all files
+      const result = await model.generateContent(contentParts);
+      const response = await result.response;
+      const aiResponse = response.text();
       
       // Add AI response with rendering flag
       const aiMessage: ChatMessage = { role: 'assistant', content: aiResponse, isRendering: true };
       setChatHistory([...newChatHistory, aiMessage]);
       
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Gemini API error:', error);
       toast({
         title: "Error",
-        description: "Gagal mengirim pesan ke Gemini AI",
+        description: `Gagal mengirim pesan ke Gemini AI: ${error.message}`,
         variant: "destructive"
       });
     } finally {
