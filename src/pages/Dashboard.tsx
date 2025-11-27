@@ -6,37 +6,6 @@ import { TrendingUp, Users, FileText, Settings } from 'lucide-react';
 import GeminiConnection from '@/components/GeminiConnection';
 
 const Dashboard = () => {
-  const stats = [
-    {
-      title: 'Learning Path (LP)',
-      value: '16',
-      icon: FileText,
-      change: '+12%',
-      color: 'text-blue-600'
-    },
-    {
-      title: 'Mitra',
-      value: '12',
-      icon: Users,
-      change: '+8%',
-      color: 'text-green-600'
-    },
-    {
-      title: 'Unit Kompetensi (UK)',
-      value: '73',
-      icon: TrendingUp,
-      change: '+15%',
-      color: 'text-purple-600'
-    },
-    {
-      title: 'Topik',
-      value: '164',
-      icon: Settings,
-      change: '+23%',
-      color: 'text-orange-600'
-    }
-  ];
-
   return (
     <DashboardLayout>
       <div className="space-y-8 animate-fade-in">
@@ -55,26 +24,6 @@ const Dashboard = () => {
             <GeminiConnection />
           </CardContent>
         </Card>
-
-        {/* Stats Overview - Full Width Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, index) => (
-            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                    <p className={`text-sm font-medium ${stat.color}`}>{stat.change} dari triwulan sebelumnya</p>
-                  </div>
-                  <div className={`p-3 rounded-xl bg-gray-50`}>
-                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
         {/* Looker Studio Section */}
         <Card className="border-0 shadow-lg">
