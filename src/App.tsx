@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import AnalisaAI from "./pages/AnalisaAI";
 import PetaMitra from "./pages/PetaMitra";
 import DaftarOkupasi from "./pages/DaftarOkupasi";
+import LMSTools from "./pages/LMSTools";
 import AdminPanel from "./pages/AdminPanel";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/analisa-ai" element={<AnalisaAI />} />
             <Route path="/peta-mitra" element={<PetaMitra />} />
             <Route path="/daftar-okupasi" element={<DaftarOkupasi />} />
+            <Route path="/lms-tools" element={<LMSTools />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="*" element={<NotFound />} />
