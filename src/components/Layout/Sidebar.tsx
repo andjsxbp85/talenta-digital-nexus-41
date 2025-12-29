@@ -9,7 +9,8 @@ import {
   Lightbulb,
   Settings,
   Menu,
-  ChevronLeft
+  ChevronLeft,
+  Wrench
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -45,6 +46,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
       title: 'Daftar Okupasi',
       href: '/daftar-okupasi',
       icon: Lightbulb,
+      show: true
+    },
+    {
+      title: 'LMS Tools',
+      href: '/lms-tools',
+      icon: Wrench,
       show: true
     },
     {
