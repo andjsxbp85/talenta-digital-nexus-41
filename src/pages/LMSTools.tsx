@@ -264,44 +264,19 @@ const LMSTools = () => {
     const highlightedHTML = generateHighlightedHTML(inputCode, selectedLanguage);
     setPreviewHTML(highlightedHTML);
 
-    const escapedCode = inputCode.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    // Escape code for HTML attribute (double quotes and special chars)
+    const escapedCodeForAttr = inputCode
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
     
-    const fullMoodleHTML = `<div style="position:relative;">
-<pre contenteditable="false" style="
-background:#2d2d2d;
-color:#f8f8f2;
-font-family:Consolas,monospace;
-padding:12px;
-padding-top:40px;
-border-radius:6px;
-overflow:auto;
-">
+    const fullMoodleHTML = `<div>
+<pre contenteditable="false" style="background:#2d2d2d;color:#f8f8f2;font-family:Consolas,monospace;padding:12px;border-radius:6px 6px 0 0;overflow:auto;margin:0;">
 ${highlightedHTML}
 </pre>
-<button onclick="
-var codeText = \`${escapedCode}\`;
-navigator.clipboard.writeText(codeText).then(function() {
-  this.innerText = '✓ Disalin!';
-  var btn = this;
-  setTimeout(function() { btn.innerText = '📋 Copy Kode'; }, 2000);
-}).catch(function(err) {
-  alert('Gagal menyalin: ' + err);
-});
-" style="
-position:absolute;
-top:8px;
-right:8px;
-background:#4a4a4a;
-color:#fff;
-border:none;
-padding:6px 12px;
-border-radius:4px;
-cursor:pointer;
-font-size:12px;
-display:flex;
-align-items:center;
-gap:4px;
-">📋 Copy Kode</button>
+<button onclick="var code=this.getAttribute('data-code');var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);this.innerText='✓ Disalin!';var b=this;setTimeout(function(){b.innerText='📋 Copy Kode';},2000);" data-code="${escapedCodeForAttr}" style="background:#4a4a4a;color:#fff;border:none;padding:8px 16px;border-radius:0 0 6px 6px;cursor:pointer;font-size:12px;width:100%;text-align:center;">📋 Copy Kode</button>
 </div>
 <p></p>`;
 
