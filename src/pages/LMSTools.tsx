@@ -267,7 +267,7 @@ const LMSTools = () => {
     const escapedCode = inputCode.replace(/`/g, '\\`').replace(/\$/g, '\\$');
     
     const fullMoodleHTML = `<div style="position:relative;">
-<pre id="code-block" contenteditable="false" style="
+<pre contenteditable="false" style="
 background:#2d2d2d;
 color:#f8f8f2;
 font-family:Consolas,monospace;
@@ -281,7 +281,9 @@ ${highlightedHTML}
 <button onclick="
 var codeText = \`${escapedCode}\`;
 navigator.clipboard.writeText(codeText).then(function() {
-  alert('Kode berhasil disalin!');
+  this.innerText = '✓ Disalin!';
+  var btn = this;
+  setTimeout(function() { btn.innerText = '📋 Copy Kode'; }, 2000);
 }).catch(function(err) {
   alert('Gagal menyalin: ' + err);
 });
@@ -292,11 +294,14 @@ right:8px;
 background:#4a4a4a;
 color:#fff;
 border:none;
-padding:4px 10px;
+padding:6px 12px;
 border-radius:4px;
 cursor:pointer;
 font-size:12px;
-">📋 Copy</button>
+display:flex;
+align-items:center;
+gap:4px;
+">📋 Copy Kode</button>
 </div>
 <p></p>`;
 
@@ -425,37 +430,50 @@ font-size:12px;
                   />
                 </div>
 
-                {/* Buttons */}
+                {/* Convert Button */}
                 <div className="flex gap-3 flex-wrap">
                   <Button onClick={handleConvert} className="bg-blue-600 hover:bg-blue-700">
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Convert
                   </Button>
-                  <Button onClick={handleCopyCode} variant="secondary" disabled={!inputCode.trim()}>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy Kode
-                  </Button>
-                  <Button onClick={handleCopyMoodleHTML} variant="outline" disabled={!moodleHTML}>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Salin HTML Moodle
-                  </Button>
                 </div>
 
-                {/* Preview Section */}
+                {/* Preview Section with Copy Button */}
                 {previewHTML && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
                       Preview Hasil
                     </label>
-                    <pre 
-                      className="p-4 rounded-lg overflow-auto text-sm"
-                      style={{
-                        background: '#2d2d2d',
-                        color: '#f8f8f2',
-                        fontFamily: 'Consolas, monospace',
-                      }}
-                      dangerouslySetInnerHTML={{ __html: previewHTML }}
-                    />
+                    <div className="relative">
+                      <pre 
+                        className="p-4 pt-12 rounded-lg overflow-auto text-sm"
+                        style={{
+                          background: '#2d2d2d',
+                          color: '#f8f8f2',
+                          fontFamily: 'Consolas, monospace',
+                        }}
+                        dangerouslySetInnerHTML={{ __html: previewHTML }}
+                      />
+                      <Button 
+                        onClick={handleCopyCode} 
+                        variant="secondary" 
+                        size="sm"
+                        className="absolute top-2 right-2 bg-gray-600 hover:bg-gray-500 text-white text-xs"
+                      >
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copy Kode
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Salin HTML Moodle Button */}
+                {moodleHTML && (
+                  <div className="flex gap-3">
+                    <Button onClick={handleCopyMoodleHTML} variant="outline">
+                      <Copy className="w-4 h-4 mr-2" />
+                      Salin HTML Moodle
+                    </Button>
                   </div>
                 )}
 
