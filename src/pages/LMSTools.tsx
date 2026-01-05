@@ -4,8 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Copy, RefreshCw } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+
+type Language = 'auto' | 'python' | 'javascript' | 'java';
 
 const TOKEN_COLORS: Record<string, string> = {
   keyword: "#cc99cd",
@@ -29,6 +32,28 @@ const PYTHON_PATTERNS = {
   punctuation: /[()[\]{},.:;]/g,
 };
 
+// JavaScript keywords and patterns
+const JAVASCRIPT_PATTERNS = {
+  keyword: /\b(async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|let|new|of|return|static|super|switch|this|throw|try|typeof|var|void|while|with|yield|true|false|null|undefined)\b/g,
+  builtin: /\b(console|window|document|Array|Object|String|Number|Boolean|Function|Symbol|Map|Set|WeakMap|WeakSet|Promise|Proxy|Reflect|JSON|Math|Date|RegExp|Error|parseInt|parseFloat|isNaN|isFinite|decodeURI|encodeURI|setTimeout|setInterval|fetch|alert|confirm)\b/g,
+  string: /(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g,
+  comment: /(\/\/.*|\/\*[\s\S]*?\*\/)/g,
+  number: /\b\d+\.?\d*\b/g,
+  operator: /[+\-*/%=<>!&|^~?:]+/g,
+  punctuation: /[()[\]{},.:;]/g,
+};
+
+// Java keywords and patterns
+const JAVA_PATTERNS = {
+  keyword: /\b(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|void|volatile|while|true|false|null)\b/g,
+  builtin: /\b(System|String|Integer|Double|Float|Boolean|Character|Object|Class|Exception|RuntimeException|Thread|Runnable|ArrayList|HashMap|HashSet|LinkedList|Collections|Arrays|Math|Scanner|PrintStream|InputStream|OutputStream|File|IOException)\b/g,
+  string: /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g,
+  comment: /(\/\/.*|\/\*[\s\S]*?\*\/)/g,
+  number: /\b\d+\.?\d*[dDfFlL]?\b/g,
+  operator: /[+\-*/%=<>!&|^~?:]+/g,
+  punctuation: /[()[\]{},.:;@]/g,
+};
+
 interface Token {
   type: string;
   content: string;
@@ -40,7 +65,72 @@ const escapeHTML = (str: string): string => {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-const tokenizePython = (code: string): Token[] => {
+const detectLanguage = (code: string): Language => {
+  const pythonIndicators = [
+    /\bdef\s+\w+\s*\(/,
+    /\bimport\s+\w+/,
+    /\bfrom\s+\w+\s+import/,
+    /:\s*$/m,
+    /\bprint\s*\(/,
+    /\belif\b/,
+    /#.*$/m,
+  ];
+  
+  const javascriptIndicators = [
+    /\bfunction\s+\w+\s*\(/,
+    /\bconst\s+\w+\s*=/,
+    /\blet\s+\w+\s*=/,
+    /\bvar\s+\w+\s*=/,
+    /=>\s*[{(]/,
+    /\bconsole\.\w+/,
+    /\bdocument\.\w+/,
+    /\bwindow\.\w+/,
+  ];
+  
+  const javaIndicators = [
+    /\bpublic\s+(static\s+)?(void|class|int|String)/,
+    /\bprivate\s+(static\s+)?(void|class|int|String)/,
+    /\bSystem\.out\./,
+    /\bpublic\s+static\s+void\s+main/,
+    /\bimport\s+java\./,
+    /\bpackage\s+\w+/,
+    /;\s*$/m,
+  ];
+  
+  let pythonScore = 0;
+  let jsScore = 0;
+  let javaScore = 0;
+  
+  pythonIndicators.forEach(pattern => {
+    if (pattern.test(code)) pythonScore++;
+  });
+  
+  javascriptIndicators.forEach(pattern => {
+    if (pattern.test(code)) jsScore++;
+  });
+  
+  javaIndicators.forEach(pattern => {
+    if (pattern.test(code)) javaScore++;
+  });
+  
+  if (javaScore >= jsScore && javaScore >= pythonScore && javaScore > 0) {
+    return 'java';
+  }
+  if (jsScore >= pythonScore && jsScore > 0) {
+    return 'javascript';
+  }
+  if (pythonScore > 0) {
+    return 'python';
+  }
+  
+  return 'python'; // Default to Python
+};
+
+const tokenize = (code: string, language: Language): Token[] => {
+  const patterns = language === 'python' ? PYTHON_PATTERNS 
+    : language === 'javascript' ? JAVASCRIPT_PATTERNS 
+    : JAVA_PATTERNS;
+  
   const tokens: Token[] = [];
   const processedRanges: { start: number; end: number }[] = [];
 
@@ -53,7 +143,7 @@ const tokenizePython = (code: string): Token[] => {
   };
 
   // Process strings first (highest priority)
-  const stringMatches = [...code.matchAll(PYTHON_PATTERNS.string)];
+  const stringMatches = [...code.matchAll(patterns.string)];
   for (const match of stringMatches) {
     const start = match.index!;
     const end = start + match[0].length;
@@ -62,7 +152,7 @@ const tokenizePython = (code: string): Token[] => {
   }
 
   // Process comments
-  const commentMatches = [...code.matchAll(PYTHON_PATTERNS.comment)];
+  const commentMatches = [...code.matchAll(patterns.comment)];
   for (const match of commentMatches) {
     const start = match.index!;
     const end = start + match[0].length;
@@ -73,7 +163,7 @@ const tokenizePython = (code: string): Token[] => {
   }
 
   // Process keywords
-  const keywordMatches = [...code.matchAll(PYTHON_PATTERNS.keyword)];
+  const keywordMatches = [...code.matchAll(patterns.keyword)];
   for (const match of keywordMatches) {
     const start = match.index!;
     const end = start + match[0].length;
@@ -84,7 +174,7 @@ const tokenizePython = (code: string): Token[] => {
   }
 
   // Process builtins
-  const builtinMatches = [...code.matchAll(PYTHON_PATTERNS.builtin)];
+  const builtinMatches = [...code.matchAll(patterns.builtin)];
   for (const match of builtinMatches) {
     const start = match.index!;
     const end = start + match[0].length;
@@ -95,7 +185,7 @@ const tokenizePython = (code: string): Token[] => {
   }
 
   // Process numbers
-  const numberMatches = [...code.matchAll(PYTHON_PATTERNS.number)];
+  const numberMatches = [...code.matchAll(patterns.number)];
   for (const match of numberMatches) {
     const start = match.index!;
     const end = start + match[0].length;
@@ -111,8 +201,9 @@ const tokenizePython = (code: string): Token[] => {
   return tokens;
 };
 
-const generateHighlightedHTML = (code: string): string => {
-  const tokens = tokenizePython(code);
+const generateHighlightedHTML = (code: string, language: Language): string => {
+  const effectiveLanguage = language === 'auto' ? detectLanguage(code) : language;
+  const tokens = tokenize(code, effectiveLanguage);
   let result = '';
   let lastIndex = 0;
 
@@ -136,22 +227,41 @@ const generateHighlightedHTML = (code: string): string => {
   return result;
 };
 
+const getLanguageLabel = (lang: Language): string => {
+  switch (lang) {
+    case 'auto': return 'Auto Detect';
+    case 'python': return 'Python';
+    case 'javascript': return 'JavaScript';
+    case 'java': return 'Java';
+    default: return lang;
+  }
+};
+
 const LMSTools = () => {
   const [inputCode, setInputCode] = useState('');
   const [previewHTML, setPreviewHTML] = useState('');
   const [moodleHTML, setMoodleHTML] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>('auto');
+  const [detectedLanguage, setDetectedLanguage] = useState<Language | null>(null);
 
   const handleConvert = () => {
     if (!inputCode.trim()) {
       toast({
         title: "Input kosong",
-        description: "Silakan masukkan kode Python terlebih dahulu.",
+        description: "Silakan masukkan kode terlebih dahulu.",
         variant: "destructive",
       });
       return;
     }
 
-    const highlightedHTML = generateHighlightedHTML(inputCode);
+    const effectiveLang = selectedLanguage === 'auto' ? detectLanguage(inputCode) : selectedLanguage;
+    if (selectedLanguage === 'auto') {
+      setDetectedLanguage(effectiveLang);
+    } else {
+      setDetectedLanguage(null);
+    }
+
+    const highlightedHTML = generateHighlightedHTML(inputCode, selectedLanguage);
     setPreviewHTML(highlightedHTML);
 
     const fullMoodleHTML = `<pre contenteditable="false" style="
@@ -170,7 +280,7 @@ ${highlightedHTML}
     
     toast({
       title: "Konversi berhasil",
-      description: "Kode Python berhasil dikonversi ke HTML Moodle.",
+      description: `Kode ${getLanguageLabel(effectiveLang)} berhasil dikonversi ke HTML Moodle.`,
     });
   };
 
@@ -223,22 +333,45 @@ ${highlightedHTML}
               <CardHeader>
                 <CardTitle className="text-xl flex items-center gap-2">
                   <RefreshCw className="w-5 h-5 text-blue-600" />
-                  Python → Moodle IDE Beautifier
+                  Code → Moodle IDE Beautifier
                 </CardTitle>
                 <p className="text-sm text-gray-600">
-                  Mengubah kode Python menjadi HTML siap pakai dengan syntax highlighting untuk LMS Moodle
+                  Mengubah kode pemrograman menjadi HTML siap pakai dengan syntax highlighting untuk LMS Moodle
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Language Selection */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Bahasa Pemrograman
+                  </label>
+                  <Select value={selectedLanguage} onValueChange={(value) => setSelectedLanguage(value as Language)}>
+                    <SelectTrigger className="w-full max-w-xs bg-background">
+                      <SelectValue placeholder="Pilih bahasa" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-lg z-50">
+                      <SelectItem value="auto">🔍 Auto Detect</SelectItem>
+                      <SelectItem value="python">🐍 Python</SelectItem>
+                      <SelectItem value="javascript">📜 JavaScript</SelectItem>
+                      <SelectItem value="java">☕ Java</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {detectedLanguage && (
+                    <p className="text-xs text-blue-600">
+                      Terdeteksi sebagai: {getLanguageLabel(detectedLanguage)}
+                    </p>
+                  )}
+                </div>
+
                 {/* Input Section */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
-                    Masukkan Kode Python
+                    Masukkan Kode {selectedLanguage !== 'auto' ? getLanguageLabel(selectedLanguage) : ''}
                   </label>
                   <Textarea
                     value={inputCode}
                     onChange={(e) => setInputCode(e.target.value)}
-                    placeholder="# Masukkan kode Python di sini...&#10;def hello_world():&#10;    print('Hello, World!')"
+                    placeholder="// Masukkan kode di sini..."
                     className="min-h-[200px] font-mono text-sm bg-gray-900 text-gray-100 border-gray-700"
                   />
                 </div>
