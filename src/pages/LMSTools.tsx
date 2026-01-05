@@ -264,16 +264,40 @@ const LMSTools = () => {
     const highlightedHTML = generateHighlightedHTML(inputCode, selectedLanguage);
     setPreviewHTML(highlightedHTML);
 
-    const fullMoodleHTML = `<pre contenteditable="false" style="
+    const escapedCode = inputCode.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    
+    const fullMoodleHTML = `<div style="position:relative;">
+<pre id="code-block" contenteditable="false" style="
 background:#2d2d2d;
 color:#f8f8f2;
 font-family:Consolas,monospace;
 padding:12px;
+padding-top:40px;
 border-radius:6px;
 overflow:auto;
 ">
 ${highlightedHTML}
 </pre>
+<button onclick="
+var codeText = \`${escapedCode}\`;
+navigator.clipboard.writeText(codeText).then(function() {
+  alert('Kode berhasil disalin!');
+}).catch(function(err) {
+  alert('Gagal menyalin: ' + err);
+});
+" style="
+position:absolute;
+top:8px;
+right:8px;
+background:#4a4a4a;
+color:#fff;
+border:none;
+padding:4px 10px;
+border-radius:4px;
+cursor:pointer;
+font-size:12px;
+">📋 Copy</button>
+</div>
 <p></p>`;
 
     setMoodleHTML(fullMoodleHTML);
@@ -284,7 +308,32 @@ ${highlightedHTML}
     });
   };
 
-  const handleCopy = async () => {
+  const handleCopyCode = async () => {
+    if (!inputCode.trim()) {
+      toast({
+        title: "Tidak ada kode",
+        description: "Silakan masukkan kode terlebih dahulu.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(inputCode);
+      toast({
+        title: "Berhasil disalin",
+        description: "Kode sumber berhasil disalin ke clipboard.",
+      });
+    } catch (error) {
+      toast({
+        title: "Gagal menyalin",
+        description: "Terjadi kesalahan saat menyalin ke clipboard.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCopyMoodleHTML = async () => {
     if (!moodleHTML) {
       toast({
         title: "Tidak ada hasil",
@@ -298,7 +347,7 @@ ${highlightedHTML}
       await navigator.clipboard.writeText(moodleHTML);
       toast({
         title: "Berhasil disalin",
-        description: "HTML IDE-like Moodle siap ditempel.",
+        description: "HTML Moodle (termasuk tombol Copy) siap ditempel.",
       });
     } catch (error) {
       toast({
@@ -377,12 +426,16 @@ ${highlightedHTML}
                 </div>
 
                 {/* Buttons */}
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-wrap">
                   <Button onClick={handleConvert} className="bg-blue-600 hover:bg-blue-700">
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Convert
                   </Button>
-                  <Button onClick={handleCopy} variant="outline" disabled={!moodleHTML}>
+                  <Button onClick={handleCopyCode} variant="secondary" disabled={!inputCode.trim()}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Kode
+                  </Button>
+                  <Button onClick={handleCopyMoodleHTML} variant="outline" disabled={!moodleHTML}>
                     <Copy className="w-4 h-4 mr-2" />
                     Salin HTML Moodle
                   </Button>
