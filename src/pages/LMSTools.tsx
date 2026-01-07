@@ -276,7 +276,7 @@ const LMSTools = () => {
 <pre contenteditable="false" style="background:#2d2d2d;color:#f8f8f2;font-family:Consolas,monospace;padding:12px;border-radius:6px 6px 0 0;overflow:auto;margin:0;">
 ${highlightedHTML}
 </pre>
-<button onclick="var code=this.getAttribute('data-code');var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);this.innerText='✓ Disalin!';var b=this;setTimeout(function(){b.innerText='📋 Salin';},2000);" data-code="${escapedCodeForAttr}" style="background:#4a4a4a;color:#fff;border:none;padding:10px 16px;border-radius:0 0 6px 6px;cursor:pointer;font-size:12px;width:10%;text-align:center;">📋 Salin</button>
+<button onclick="var code=this.getAttribute('data-code');var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);this.innerText='✓ Disalin!';var b=this;setTimeout(function(){b.innerText='📋 Salin';},2000);" data-code="${escapedCodeForAttr}" style="background:#4a4a4a;color:#fff;border:none;padding:5px 5px;border-radius:0 0 6px 6px;cursor:pointer;font-size:12px;width:10%;text-align:center;">📋 Salin</button>
 </div>
 <p></p>`;
 
