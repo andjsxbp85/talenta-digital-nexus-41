@@ -75,7 +75,7 @@ const detectLanguage = (code: string): Language => {
     /\belif\b/,
     /#.*$/m,
   ];
-  
+
   const javascriptIndicators = [
     /\bfunction\s+\w+\s*\(/,
     /\bconst\s+\w+\s*=/,
@@ -86,7 +86,7 @@ const detectLanguage = (code: string): Language => {
     /\bdocument\.\w+/,
     /\bwindow\.\w+/,
   ];
-  
+
   const javaIndicators = [
     /\bpublic\s+(static\s+)?(void|class|int|String)/,
     /\bprivate\s+(static\s+)?(void|class|int|String)/,
@@ -96,23 +96,23 @@ const detectLanguage = (code: string): Language => {
     /\bpackage\s+\w+/,
     /;\s*$/m,
   ];
-  
+
   let pythonScore = 0;
   let jsScore = 0;
   let javaScore = 0;
-  
+
   pythonIndicators.forEach(pattern => {
     if (pattern.test(code)) pythonScore++;
   });
-  
+
   javascriptIndicators.forEach(pattern => {
     if (pattern.test(code)) jsScore++;
   });
-  
+
   javaIndicators.forEach(pattern => {
     if (pattern.test(code)) javaScore++;
   });
-  
+
   if (javaScore >= jsScore && javaScore >= pythonScore && javaScore > 0) {
     return 'java';
   }
@@ -122,21 +122,21 @@ const detectLanguage = (code: string): Language => {
   if (pythonScore > 0) {
     return 'python';
   }
-  
+
   return 'python'; // Default to Python
 };
 
 const tokenize = (code: string, language: Language): Token[] => {
-  const patterns = language === 'python' ? PYTHON_PATTERNS 
-    : language === 'javascript' ? JAVASCRIPT_PATTERNS 
-    : JAVA_PATTERNS;
-  
+  const patterns = language === 'python' ? PYTHON_PATTERNS
+    : language === 'javascript' ? JAVASCRIPT_PATTERNS
+      : JAVA_PATTERNS;
+
   const tokens: Token[] = [];
   const processedRanges: { start: number; end: number }[] = [];
 
   const isOverlapping = (start: number, end: number): boolean => {
-    return processedRanges.some(range => 
-      (start >= range.start && start < range.end) || 
+    return processedRanges.some(range =>
+      (start >= range.start && start < range.end) ||
       (end > range.start && end <= range.end) ||
       (start <= range.start && end >= range.end)
     );
@@ -212,7 +212,7 @@ const generateHighlightedHTML = (code: string, language: Language): string => {
     if (token.start > lastIndex) {
       result += escapeHTML(code.slice(lastIndex, token.start));
     }
-    
+
     // Add the token with color
     const color = TOKEN_COLORS[token.type] || "#f8f8f2";
     result += `<span style="color:${color};">${escapeHTML(token.content)}</span>`;
@@ -271,17 +271,17 @@ const LMSTools = () => {
       .replace(/'/g, '&#39;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
-    
+
     const fullMoodleHTML = `<div>
 <pre contenteditable="false" style="background:#2d2d2d;color:#f8f8f2;font-family:Consolas,monospace;padding:12px;border-radius:6px 6px 0 0;overflow:auto;margin:0;">
 ${highlightedHTML}
 </pre>
-<button onclick="var code=this.getAttribute('data-code');var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);this.innerText='✓ Disalin!';var b=this;setTimeout(function(){b.innerText='📋 Copy Kode';},2000);" data-code="${escapedCodeForAttr}" style="background:#4a4a4a;color:#fff;border:none;padding:8px 16px;border-radius:0 0 6px 6px;cursor:pointer;font-size:12px;width:100%;text-align:center;">📋 Copy Kode</button>
+<button onclick="var code=this.getAttribute('data-code');var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);this.innerText='✓ Disalin!';var b=this;setTimeout(function(){b.innerText='📋 Salin';},2000);" data-code="${escapedCodeForAttr}" style="background:#4a4a4a;color:#fff;border:none;padding:10px 16px;border-radius:0 0 6px 6px;cursor:pointer;font-size:12px;width:10%;text-align:center;">📋 Salin</button>
 </div>
 <p></p>`;
 
     setMoodleHTML(fullMoodleHTML);
-    
+
     toast({
       title: "Konversi berhasil",
       description: `Kode ${getLanguageLabel(effectiveLang)} berhasil dikonversi ke HTML Moodle.`,
@@ -420,7 +420,7 @@ ${highlightedHTML}
                       Preview Hasil
                     </label>
                     <div className="relative">
-                      <pre 
+                      <pre
                         className="p-4 pt-12 rounded-lg overflow-auto text-sm"
                         style={{
                           background: '#2d2d2d',
@@ -429,9 +429,9 @@ ${highlightedHTML}
                         }}
                         dangerouslySetInnerHTML={{ __html: previewHTML }}
                       />
-                      <Button 
-                        onClick={handleCopyCode} 
-                        variant="secondary" 
+                      <Button
+                        onClick={handleCopyCode}
+                        variant="secondary"
                         size="sm"
                         className="absolute top-2 right-2 bg-gray-600 hover:bg-gray-500 text-white text-xs"
                       >
